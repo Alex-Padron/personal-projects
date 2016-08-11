@@ -1,0 +1,148 @@
+/*
+Other hashtbl ideas:
+-never rewrite old arrays, just allocate
+new ones and store pointers in smaller hash table
+ */
+#include "hash.c"
+#include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
+
+struct entry {
+  char *key;
+  char *value;
+  struct entry *next;
+};
+
+void append (struct entry *e, char *k, char *v) {
+  assert( e->next != e );
+  if (e->next == NULL) {
+    printf ("allocating and appending \n");
+    struct entry *n = malloc( sizeof( struct entry ));
+    n->key = k;
+    n->value = v;
+    n->next = NULL;
+    assert( n != e );
+    e->next = n;
+    assert( e->next != e );
+    printf ("finished appending \n");
+  } else {
+    printf ("current mode at location %d. passing append to next node \n", e);
+    append (e->next, k, v);
+  }
+}
+
+struct entry *find (struct entry *e, char *k) {
+  if (e->key == k) {
+    return e;
+  } else {
+    if (e->next == NULL) {
+      return NULL;
+    } else {
+      return find (e->next, k);
+    }
+  }
+}
+
+void remove_key (struct entry *e, char *k) {
+  if (e->next == NULL) {
+    if (e->key == k) {
+      free( e );
+      e = NULL;
+    }
+  } else {
+    if (e->next->key == k) {
+      struct entry *tmp = e->next->next;
+      free( e->next );
+      e->next = tmp;
+      assert( e->next != e );
+    } else {
+      remove_key( e->next, k );
+    }
+  }
+}
+
+struct hashtbl {
+  int size;
+  struct entry **table;
+};
+
+typedef struct hashtbl hashtbl;
+
+hashtbl *create (int size){
+  hashtbl *hashtbl = NULL;
+  if (size < 1) return NULL;
+  //allocate the hashtbl and table
+  hashtbl = malloc( sizeof( hashtbl ) );
+  hashtbl->table = (struct entry **) malloc( sizeof( struct entry * ) * size);
+  int i;
+  //set all of the initial pointers to null
+  for (i = 0; i < size; i++) {
+    hashtbl->table[i] = NULL;
+  }
+  hashtbl->size = size;
+  return hashtbl;
+}
+
+void insert (hashtbl *h, char *k, char *v){
+  uint32_t hv = hash(k, 512) % h->size;
+  append(h->table[hv], k, v);
+}
+
+void make_null (struct entry *e) {
+  e = NULL;
+}
+void unit_test () {
+  printf( "testing append... \n" );
+  struct entry *e1 = malloc ( sizeof( struct entry ));
+  e1->key = "a";
+  e1->value = "b";
+  append( e1, "c", "d" );
+  assert (e1->next != NULL);
+  struct entry *e2 = e1->next;
+  assert( e2->key == "c" );
+  assert( e2->value == "d" );
+  append( e1, "e", "f" );
+  struct entry *e3 = e1->next->next;
+  assert( e3->key == "e" );
+  assert( e3->value == "f" );
+  printf( "...passed \n" );
+  
+  printf( "testing find... \n" );
+  e1 = find( e1, "a" );
+  assert( e1->key == "a" );
+  assert( e1->value == "b" );
+  e2 = find( e1, "c" );
+  assert( e2->key == "c" );
+  assert( e2->value == "d" );
+  e3 = find( e1, "e" );
+  assert( e3->key == "e" );
+  assert( e3->value == "f" );
+  printf( "...passed \n" );
+
+  printf( "testing remove... \n" );
+  remove_key( e1, "c" );
+  assert( e1->next->next == NULL );
+  e2 = e1->next;
+  assert( e2->key == "e" );
+  assert( e2->value == "f" );
+  remove_key( e1, "e" );
+  assert( e1->next == NULL );
+
+  remove_key( e1, "a" );
+  append( e1, "g", "h" );
+  assert( e1->key == "g" );
+  assert( e1->value == "h" );
+
+  printf ("appending to e1 \n");
+  append( e1, "i", "j" );
+  assert( e1->next->key == "i" );
+  assert( e1->next->key == "g" );
+  printf( "...passed \n" );
+
+}
+ 
+int main () {
+  unit_test ();
+  return 0;
+}
