@@ -2,6 +2,10 @@
 #include <stdlib.h>
 #include <assert.h>
 
+/*
+TODO: add a replace_key function
+ */
+
 typedef struct node {
   char *key;
   char *value;
@@ -17,13 +21,22 @@ inline node_t *node (char *key, char *value) {
 
 node_t *append (node_t *list, char *key, char *value) {
   if (list == NULL) return node( key, value );
-
   node_t *target = list;
   while (target->next != NULL) {
     target = target->next;
   }
   target->next = node( key, value );
   return list;
+}
+
+int list_length (node_t *list) {
+  if (list == NULL) return 0;
+  int count = 0;
+  while (list != NULL) {
+    count += 1;
+    list = list->next;
+  }
+  return count;
 }
 
 node_t *remove_last (node_t *list) {
@@ -53,6 +66,16 @@ node_t *pop (node_t *list) {
   return new_head;
 }	      
 
+node_t *find_key (node_t *list, char *key) {
+  while (list != NULL) {
+    if (list->key == key) {
+      return list;
+    }
+    list = list->next;
+  }
+  return NULL;
+}
+
 node_t *remove_key (node_t *list, char *key) {
   if (list == NULL) assert(0);
   if (list->key == key) {
@@ -71,7 +94,15 @@ node_t *remove_key (node_t *list, char *key) {
   return list;
 }
 
-void unit_test () {
+int contains (node_t *list, char *key) {
+  while (list != NULL) {
+    if (list->key == key) return 1;
+    list = list->next;
+  }
+  return 0;
+}
+
+void list_unit_test () {
   node_t *head = NULL;
 
   printf( "testing append... \n" );
@@ -163,10 +194,27 @@ void unit_test () {
   head = append( head, "e", "f" );
   head = remove_key( head, "c" );
   assert( head->next->key == "e" );
+  free( head->next );
+  head->next = NULL;
+  free( head );
+  head = NULL;
   printf( "...passed \n" );
-}
-
-int main () {
-  unit_test();
-  return 0;
+  
+  printf( "testing contains... \n" );
+  assert( head == NULL );
+  head = append( head, "a", "b" );
+  assert( contains( head, "a" ) );
+  head = append( head, "c", "d" );
+  assert( contains( head, "c" ));
+  assert( !contains( head, "e" ));
+  printf( "...passed \n" );
+  
+  printf( "testing find_key... \n" );
+  assert( find_key( head, "c" )->value == "d" );
+  assert( find_key( head, "e" ) == NULL );
+  printf( "...passed \n" );
+  
+  printf( "testing length... \n" );
+  assert( list_length( head ) == 2 );
+  printf( "...passed \n" );
 }
