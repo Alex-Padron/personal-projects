@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-
+#include <string.h>
 /*
 TODO: add a replace_key function
  */
@@ -68,7 +68,7 @@ node_t *pop (node_t *list) {
 
 node_t *find_key (node_t *list, char *key) {
   while (list != NULL) {
-    if (list->key == key) {
+    if ( !strcmp( list->key, key )) {
       return list;
     }
     list = list->next;
@@ -78,13 +78,13 @@ node_t *find_key (node_t *list, char *key) {
 
 node_t *remove_key (node_t *list, char *key) {
   if (list == NULL) assert(0);
-  if (list->key == key) {
+  if ( !strcmp( list->key, key )) {
     node_t *new_head = list->next;
     free( list );
     return new_head;
   }
   node_t *to_remove_parent = list;
-  while (to_remove_parent->next != NULL && to_remove_parent->next->key != key) {
+  while (to_remove_parent->next != NULL && strcmp( to_remove_parent->next->key,  key )) {
     to_remove_parent = to_remove_parent->next;
   }
   if (to_remove_parent == NULL) assert(0);
@@ -96,7 +96,7 @@ node_t *remove_key (node_t *list, char *key) {
 
 int contains (node_t *list, char *key) {
   while (list != NULL) {
-    if (list->key == key) return 1;
+    if ( !strcmp( list->key, key )) return 1;
     list = list->next;
   }
   return 0;
@@ -209,6 +209,10 @@ void list_unit_test () {
   assert( !contains( head, "e" ));
   printf( "...passed \n" );
   
+  assert( !strcmp( "b", "b" ));
+  assert( strcmp( "a", "b" ));
+  assert( !strcmp( "bbb", "bbb" ));
+  assert( strcmp( "aaa", "bbb" ));
   printf( "testing find_key... \n" );
   assert( find_key( head, "c" )->value == "d" );
   assert( find_key( head, "e" ) == NULL );
