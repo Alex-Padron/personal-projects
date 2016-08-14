@@ -28,7 +28,15 @@ class Hashtbl:
         kvnode = self.tbl[bin].find(lambda x: x.key == key)
         if kvnode:
             return kvnode.value
-            
+
+    def remove(self, key):
+        bin = self.tbl[self.hash(key)]
+        old_length = bin.length
+        bin.filter(lambda x: x.key == key)
+        new_length = bin.length 
+        self.elements += (new_length - old_length)
+        self.resize()
+
     def bin_sizes(self):
         bin_sizes = [None]*self.size
         for i in range(self.size):
@@ -68,7 +76,7 @@ class Hashtbl:
         if self.elements > self.size/2:
             self.copy_table(2*self.size)
         elif self.elements < self.size/4:
-            if self.size < 4:
+            if self.size <= 4:
                 return
             self.copy_table(self.size/2)
 
@@ -97,7 +105,6 @@ def unit_test():
         ht.set("a"*i, 2*i)
     for i in range(1000):
         assert(ht.get("a"*i) == 2*i)
-    print(ht.elements)
     assert(ht.elements == 1000)
     print("...passed")
 
@@ -114,7 +121,25 @@ def unit_test():
 
     print("testing repeat inserts...")
     ht = Hashtbl(2)
-    assert(False)
+    for i in range(1000):
+        ht.set("a"*(i%5), "b"*(i%5))
+    assert(balanced(ht.bin_sizes(), ht.size))
+    assert(ht.elements == 5)
+    for i in range(1000):
+        assert(ht.get("a"*(i%5)) ==  "b"*(i%5))
     print("...passed")
+
+    print("testing remove...")
+    ht = Hashtbl(2)
+    for i in range(1000):
+        ht.set("a"*i, 2*i)
+    for i in range(1000):
+        ht.remove("a"*i)
+    for i in range(1000):
+        assert(ht.get("a"*i) == None)
+    assert(ht.size == 4)
+    assert(balanced(ht.bin_sizes(), ht.size))
+    print("...passed")
+
 if __name__ == "__main__":
     unit_test()
