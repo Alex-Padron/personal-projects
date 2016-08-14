@@ -51,6 +51,13 @@ class List:
             node = node.child
             index -= 1
         return node.data
+        
+    def find(self, f):
+        node = self.child
+        while node != None:
+            if f(node.data):
+                return node.data
+            node = node.child
 
 def unit_test():
     print("testing append...")
@@ -115,6 +122,19 @@ def unit_test():
     assert(l.get(0) == 6)
     assert(l.get(1) == 4)
     assert(l.get(2) == 2)
+    print("...passed")
+    
+    print("testing find...")
+    l = List()
+    l.push(1)
+    l.push(2)
+    l.push(3)
+    l.push(4)
+    l.push(5)
+    l.push(6)
+    l.push(27)
+    assert(l.find(lambda x: x % 5 == 0) == 5)
+    assert(l.find(lambda x: x % 27 == 0) == 27)
     print("...passed")
 if __name__ == "__main__":
     unit_test()

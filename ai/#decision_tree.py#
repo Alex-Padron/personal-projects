@@ -114,6 +114,7 @@ class Node:
         if not field_val in self.possibilities:
             return "unknown attr %s - cannot parse in tree" % field_val
         return self.possibilities[field_val].query(actor)
+
 class Actor:
     #attsrs is a list of strings representing an attribute, for example hair color
     #could be ["red"] or ["blue"].
