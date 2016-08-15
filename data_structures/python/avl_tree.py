@@ -45,12 +45,15 @@ class Node:
             node = node.left
         return node
     
-    
+    def refresh_height(self):
+        self.height = max(self.left.height, self.right.height) + 1
+
     def remove_min(self):
         if self.left == None:
             return self.right
         else:
             self.left = self.left.remove_min()
+            self.refresh_height()
             return self
 
     def remove(self, key):
@@ -69,6 +72,7 @@ class Node:
             self.key = n.key
             self.value = n.value
             self.right = remove_min(n.right)
+        self.refresh_height()
         return self
 
 class AVL_Tree:
