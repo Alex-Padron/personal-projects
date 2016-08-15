@@ -1,27 +1,24 @@
 
 
 class Node:
-    def __init__ (self, key, value, height):
+    def __init__ (self, key, value):
         self.key = key
         self.value = value
         self.left = None
         self.right = None
-        self.height = height 
 
     def insert(self, key, value):
         target = None
         if key > self.key:
             if self.right == None:
-                self.right = Node(key, value, 0)
+                self.right = Node(key, value)
             else:
                 self.right.insert(key, value)
-            self.height = max(self.height, self.right.height + 1)
         elif key < self.key:
             if self.left == None:
-                self.left = Node(key, value, 0)
+                self.left = Node(key, value)
             else:
                 self.left.insert(key, value)
-            self.height = max(self.height, self.left.height + 1)
         else:
             self.value = value
 
@@ -45,15 +42,11 @@ class Node:
             node = node.left
         return node
     
-    def refresh_height(self):
-        self.height = max(self.left.height, self.right.height) + 1
-
     def remove_min(self):
         if self.left == None:
             return self.right
         else:
             self.left = self.left.remove_min()
-            self.refresh_height()
             return self
 
     def remove(self, key):
@@ -72,17 +65,15 @@ class Node:
             self.key = n.key
             self.value = n.value
             self.right = remove_min(n.right)
-        self.refresh_height()
         return self
 
-class AVL_Tree:
+class BST:
     def __init__(self):
         self.child = None
-        self.size = 0
         
     def insert(self, key, value):
         if self.child == None:
-            self.child = Node(key, value, 0)
+            self.child = Node(key, value)
         else:
             self.child.insert(key, value)
 
@@ -103,12 +94,6 @@ class AVL_Tree:
         else:
             return self.child.find_min()
     
-    def height(self):
-        if self.child == None:
-            return -1
-        else:
-            return self.child.height
-    
     def remove_min(self):
         if self.child == None:
             return
@@ -117,7 +102,7 @@ class AVL_Tree:
 
 def unit_test():
     print("testing basic insert and get...")
-    t = AVL_Tree()
+    t = BST()
     t.insert(1, "a")
     t.insert(2, "b")
     t.insert(0.5, "c")
@@ -131,7 +116,7 @@ def unit_test():
     print("...passed")
     
     print("testing basic get..")
-    t = AVL_Tree()
+    t = BST()
     t.insert(1, "a")
     t.insert(2, "b")
     t.insert(1.5, "c")
@@ -142,18 +127,17 @@ def unit_test():
     assert(t.get(1.5) == "c")
     assert(t.get(4) == "d")
     assert(t.get(0.5) == "e")
-    assert(t.height() == 2)
     print("...passed")
 
     print("testing remove min...")
-    n = Node(1, "a", 0)
+    n = Node(1, "a")
     n.insert(0.5, "b")
     n = n.remove_min()
     assert(n.left == None)
     n.insert(0.5, "b")
     n.insert(0.25, "c")
     assert(n.left.key == 0.5)
-    n = Node(100, "a", 0)
+    n = Node(100, "a")
     n.insert(50, "b")
     n.insert(75, "c")
     n = n.remove_min()
@@ -162,7 +146,7 @@ def unit_test():
     print("...passed")
 
     print("test remove...")
-    t = AVL_Tree()
+    t = BST()
     t.insert(1,"a")
     t.insert(0.5, "b")
     t.insert(0.75, "c")
@@ -175,7 +159,7 @@ def unit_test():
     t.remove(0.25)
     assert(t.child.left.left.left == None)
     assert(t.get(0.25) == None)
-    n = Node(1, "a", 0)
+    n = Node(1, "a")
     n.insert(2, "b")
     n.remove(2)
     assert(n.right == None)
@@ -186,18 +170,6 @@ def unit_test():
     assert(n.right.value == "c")
     print("...passed")
 
-    print("testing heights...")
-    t = AVL_Tree()
-    assert(t.height() == -1)
-    t.insert(1, "a")
-    assert(t.height() == 0)
-    t.insert(2, "b")
-    assert(t.height() == 1)
-    t.insert(0.5, "c")
-    assert(t.height() == 1)
-    t.insert(4, "d")
-    assert(t.height() == 2)
-    print("...passed")
 if __name__ == "__main__":
     unit_test()
     
