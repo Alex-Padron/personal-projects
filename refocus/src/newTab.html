@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Refocus</title>
+		<script src="jquery-2.2.3.min.js"></script>
+		<script src="js/bootstrap.min.js"></script>
+		<script src="js/newTab.js"></script>
+    <script src="js/newSessionModal.js"></script>
+		<link rel="stylesheet" type="text/css" href="refocus.css">
+		<link rel="stylesheet" href="css/bootstrap.min.css">
+	</head>
+
+	<body style="padding:100px">
+		<div>
+			<div class="page-header jumbotron">
+				<h1 class="text-center"> Refocus </h1>
+			</div>
+		</div>
+
+  	<div class="centered">
+	    <button id="newSession" class="btn btn-info btn-lg" data-toggle="modal" data-target="#newSessionModal" 
+	    		style="background-color:#F55E61; border-color:#F55E61; outline: none !important;">New Session</button>
+	    <button id="disable" class="btn btn-info btn-lg" data-toggle="modal" data-target="" 
+	    		style="background-color:#F55E61; border-color:#F55E61; outline: none !important;">Disable for Now</button>
+
+	<!-- New Session Modal -->
+	<div id="newSessionModal" class="modal fade" role="dialog">
+		<div class="modal-dialog">
+			<!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h1 class="modal-title">New Session</h1>
+          
+        </div>
+        <div class="modal-body" style="text-align: left;">
+          <!-- tag? -->
+          <!--<h2 class="modal-title">New Session</h2> -->
+          <h4>Timer: <input type="number" id="usr_time" min="0" max="1000" style="width: 50px;" > minutes &nbsp; <input type="checkbox" class="styled" name="notimer" style="margin: 0px 5px 0px 0px">No Timer</input><br></h4> 
+          <h4>Permitted Websites: <input type="text" id="userWebsite"></input>
+          <button id="addWebsite" class="btn btn-info btn-md" style="color:#000000; background-color:#D3D3D3; border-color:#D3D3D3; outline: none !important; align: left;">Add Site</button><br></h4>
+          <table>
+            <tbody id="permittedWebsitesContainer" class="h4">
+            <!--
+              <tr><td><a href='http://www.wikipedia.org'>wikipedia.org</a></td><td><a href="#" class="website"><span class="glyphicon glyphicon-remove" style="color:#F55E61"></span></a></td></tr>
+            -->
+            </tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" style="float:left" class="btn btn-danger" data-dismiss="modal" style="outline: none !important;">Cancel</button>
+          <a href="sessionTab.html" id="StartNewSession" onclick="return false;" target="_self" id="code" type="submit" class="btn btn-success" style="outline: none !important;">Start</a>
+        </div>
+      </div>
+		</div>
+	</div>
+  </body>
+
+</html>

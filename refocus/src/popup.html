@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Refocus</title>
+    <script src="backgroundPage.js"></script>
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="refocus.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="select2/select2.css">
+    <style type="text/css">
+        body {
+            padding: 10px;
+            width: 275px;
+            box-sizing: border-box;
+            height: 550px;
+        }
+        td {
+            padding: 3px;
+        }
+        input.inline-text {
+            margin-bottom: 0px;
+        }
+
+        h3 {
+            line-height: normal;
+        }
+        .tdcheckbox {
+            padding-right: 5px;
+        }
+
+        body input, body select {
+            margin: 0px;
+        }
+        body select {
+            width: 189px;
+        }
+        .well {
+            margin-top: 10px;
+            margin-bottom: 0px;
+        }
+        .setting-name {
+            font-size: 22px;
+            font-weight: bold;
+            color: grey;
+            margin-bottom: 20px;;
+        }
+
+        .done-cont {
+            margin-top: 10px;
+            text-align: center;
+        }
+
+    </style>
+  </head>
+  <body>
+    <h3 class="domain">Change Style</h3>
+    <div>
+        Use <select class="setting-type"><option value="global">Global Settings</option><option value="custom">Custom Settings</option><option value="none">No Settings</option></select>
+    </div>
+    <div class="well">
+        <div class="setting-name">Global Settings</div>
+        <div class="control-group">
+            <label>Font Name</label>
+            <table><tr><td class="tdcheckbox"><input type="checkbox" class="enable-select" id="font_family_chk"></td><td><select style="width: 189px;" id="font_family" class="inline-text" disabled="disabled"></select></td></tr></table>
+        </div>
+        <div class="control-group">
+            <label>Font Style</label>
+            <table>
+                <tr>
+                    <td class="tdcheckbox"><input type="checkbox" id="font_style_chk"></td>
+                    <td>
+                        <select id="font_style" class="inline-text" disabled="disabled">
+                            <option value="normal">Normal</option>
+                            <option value="italic">Italic</option>
+                            <option value="oblique">Oblique</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="control-group">
+            <label>Font Weight</label>
+            <table>
+                <tr>
+                    <td class="tdcheckbox"><input type="checkbox" id="font_weight_chk"></td>
+                    <td>
+                        <select id="font_weight" class="inline-text" disabled="disabled">
+                            <option value="normal">Normal</option>
+                            <option value="bold">Bold</option>
+                            <option value="bolder">Bolder</option>
+                            <option value="lighter">Lighter</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="control-group">
+            <label>Font Size</label>
+            <table><tr><td class="tdcheckbox"><input type="checkbox" class="enable-text" id="font_size_chk"></td><td><input type="text" id="font_size" class="input-medium inline-text" disabled="disabled"> px</td></tr></table>
+        </div>
+    </div>
+    <div class="done-cont"><button class="btn btn-primary done" type="button">Done</button></div>
+  </body>
+
+  <script src="js/jquery-1.11.1.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="js/settings.js"></script>
+</html>

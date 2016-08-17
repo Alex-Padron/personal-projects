@@ -1,0 +1,129 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Refocus</title>
+    <script src="jquery-2.2.3.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/newTab.js"></script>
+    <script src="js/sessionTab.js"></script>
+    <link rel="stylesheet" type="text/css" href="refocus.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+  </head>
+
+  <body style="padding:100px">
+    <div>
+      <div class="jumbotron">
+        <h1 class="text-center"> Refocus </h1>
+      </div>
+    </div>
+
+<!-- Table to hold both the permitted site and the notes -->
+<table width="100%" style="float: center;">
+
+  <tr>
+
+    <!--Element to hold permitted sites -->
+    <td width="45%" style="float: left">
+      <div class="container">
+        <div class="row-fluid">
+          <div class="col-md-8">
+            <!-- Main name for the permitted sites section -->
+            <h1 style="font-size: 36">Permitted Sites</h1>
+              <!-- Table for websites user will submit -->
+            <h3>
+              <input type="text" id="userWebsite"></input>
+              <button id="addWebsite" name="butt" class="btn btn-info btn-md" style="color:#000000; background-color:#D3D3D3; border-color:#D3D3D3; outline: none !important;">Add Site</button><br>
+            </h3>
+          </div>
+        </div>
+
+        <!-- element to hold list of permitted websites -->
+        <div class="row-fluid">
+          <div class="col-md-8">
+            <table id="sites" align="left">
+              <tbody id="permittedWebsitesContainer" class="h3">          
+              </tbody>
+            </table>
+          </div>
+       </div>
+      </div>
+    </td>
+
+    <!--Element to hold notes-->
+    <td width="45%" style="float: right">
+
+        <div class="row-fluid">
+          <div id="countdownContainer" class="col-md-8" style="visibility: hidden;">
+            <label for="countdown">Time left in your session:</label>
+            <div id="countdown"></div>
+          </div>
+        </div>
+
+      <!-- main notes label -->
+        <div class="row-fluid">
+          <div class="col-md-8">
+            <h1 style="font-size: 36">Notes</h1>
+          </div>
+        </div>
+
+        <!-- Text box for users to add notes -->
+        <div class="row-fluid">
+          <div class="col-md-8">
+            <textarea id="sessionNewNotes" rows="4" style="width: 450px;"> </textarea>
+          </div>
+        </div>
+
+        <!-- save button for added notes -->
+        <div class="row-fluid">
+          <div class="col-md-11">
+            <button id="sessionSaveButton" type="button" class="btn btn-info" style="color:#000000; background-color:#D3D3D3; border-color:#D3D3D3; outline: none !important; float:right">Add Note</button>
+            <button id="downl" type="button" class="btn btn-success" style="float:left">Download Notes</button>
+          </div>
+        </div>
+        
+
+        <!--main name for the saved notes section -->
+        <div class="row-fluid">
+          <div class="col-md-8">
+            <h1 style="font-size: 36; color:white">Saved Notes</h1>
+          </div>
+        </div>
+
+
+        <div class="row-fluid">
+          <div class="col-md-8">
+            <p style="width: 400px;">
+              <p id="savedNotesSession"></p>
+            </p>
+          </div>
+        </div>
+
+<!--       </div> -->
+    </td>
+
+  </tr>
+</table>
+
+
+  <div id="timesUpModal" class="modal fade" data-backdrop="static" data-keyboard="false" role="dialog" style="z-index:999999">
+    <div class="modal-dialog">
+
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h1 class="modal-title">Refocus</h1>
+        </div>
+        <div class="modal-body">
+          <h2>Time's Up!</h2>
+        </div>
+        <div class="modal-footer">
+          <button id="download" style="float:left" type="button" style="text-align:center" class="btn btn-success" data-dismiss="modal">Download Notes and End Session</button>
+          <button type="button" id="continueSessionButton" style="float:right; color:#000000; background-color:#D3D3D3; border-color:#D3D3D3; outline: none !important;" class="btn btn-info" data-dismiss="modal">Continue Session</button>
+        </div>
+      </div>
+    </div>
+  </div>  
+
+  </body>
+</html>

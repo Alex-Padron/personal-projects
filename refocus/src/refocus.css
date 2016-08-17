@@ -1,0 +1,28 @@
+
+.centered {
+  text-align:center;
+}
+
+.large_newTab_buttons {
+	background-color:#F55E61;
+	color:#ffffff;
+}
+
+body, html { height:100% }
+
+#notesList {
+	list-style-type: circle;
+  overflow-y: scroll;
+}
+
+#notesBarAll {
+	overflow: hidden;
+}
+
+#countdown {
+	display: inline-block;
+}
+
+a {
+	cursor: pointer;
+}

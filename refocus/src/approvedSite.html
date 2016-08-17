@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Refocus</title>
+		<script src="jquery-2.2.3.min.js"></script>
+		<script src="js/bootstrap.min.js"></script>
+		<script src="js/approvedSite.js"></script>
+		<link rel="stylesheet" type="text/css" href="refocus.css">
+		<link rel="stylesheet" href="css/bootstrap.min.css">
+	</head>
+	<body>
+		<iframe id="cannedFrame" src="http://scitation.aip.org/content/aip/journal/jap/20/9/10.1063/1.1698540" style="position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:75%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:0;"></iframe>
+		<div style="float:right; width:25%; height:100%; background-color: #f9a6a8;">
+			<div id="notesBarAll" style="float:right; width:100%; padding-right:10px; padding-left:10px;">
+				<h4>NOTES</h4> 
+    		<ol id="notesList"></ol>
+    		<div class="form-group">
+    			<textarea rows="4" cols="40" id="noteInput"></textarea><br> 
+    		</div>
+    		<button id="addNoteButton" type="button" class="btn btn-default" style="float:right">Add Note</button>
+    		<button id="downloadNotesButton" type="button" class="btn btn-success">Download Notes</button><br><br>
+
+    		<div id="countdownContainer" style="visibility: hidden;">
+	  			<label for="countdown">Time left in your session:</label>
+	  			<div id="countdown"></div>
+    		</div>
+
+			</div>
+		</div>
+	
+
+		<!-- Time's Up Modal-->
+	<div id="timesUpModal" class="modal fade" data-backdrop="static" data-keyboard="false" role="dialog" style="z-index:999999">
+	  <div class="modal-dialog">
+
+	    <!-- Modal content-->
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal">&times;</button>
+	        <h1 class="modal-title">Refocus</h1>
+	      </div>
+	      <div class="modal-body">
+	      	<h2>Time's Up!</h2>
+	      </div>
+	      <div class="modal-footer">
+	        <button id="download" style="float:left" type="button" style="text-align:center" class="btn btn-success" data-dismiss="modal">Download Notes and End Session</button>
+	        <button type="button" id="continueSessionButton" style="float:right; color:#000000; background-color:#D3D3D3; border-color:#D3D3D3; outline: none !important;" class="btn btn-info" data-dismiss="modal">Continue Session</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>	
+	</body>
+
+</html>
