@@ -1,1 +1,1 @@
-Some code that I wrote for fun.
+Various projects I have participated in/code that I wrote for fun
