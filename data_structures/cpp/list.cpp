@@ -64,14 +64,38 @@ public:
       n = n->next;
     }
   }
+
+  void filter_data(bool (*f)(T, T), T data) {
+    if (head == NULL) return;
+    //filter head repeatedly
+    while (f(*head->data, data)) {
+      head = head->next;
+      if (head == NULL) return;
+    }
+    //filter child nodes
+    node n = head;
+    while (n != NULL && n->next != NULL) {
+      if (f(*n->next->data, data)) {
+	n->next = n->next->next;
+      }
+      n = n->next;
+    }  
+  }
+
+  T *find_data(bool (*f)(T, T), T data) {
+    if (head == NULL) {
+      return NULL;
+    }
+    node n = head;
+    while (n != NULL) {
+      if (f(*n->data, data)) {
+	return n->data; 
+      }
+      n = n->next;
+    }
+    return NULL;
+  }
 };
-
-void list_unit_test();
-
-int main() {
-  list_unit_test();
-  return 0;
-}
 
 bool is_even(int x) {
   return x % 2 == 0;
@@ -133,6 +157,27 @@ void list_unit_test() {
   for (int i = 9; i > 0; i = i - 2) {
     assert(*l.pop() == i);
   }
+  printf("...passed \n");
+
+  printf("testing filter_data... \n");
+  assert(l.length() == 0);
+  for (int i = 0; i < 10; i++) {
+    l.push(&x[i]);
+  }
+  l.filter_data([](int x, int y) ->bool { return x == y; }, 3);
+  for (int i = 9; i >= 0; i--) {
+    if (i != 3) {
+      assert(*l.pop() == i);
+    }
+  }
+  printf("...passed \n");
+
+  printf("testing find_data... \n");
+  assert(l.length() == 0);
+  for (int i = 0; i < 10; i++) {
+    l.push(&x[i]);
+  }
+  assert(*l.find_data([](int x, int y) -> bool { return x == 2*y; }, 4) == 8);
   printf("...passed \n");
 }
     
