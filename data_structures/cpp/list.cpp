@@ -2,42 +2,32 @@
 #include <assert.h>
 #include <memory>
 
+
 template <class T>
 class ListNode {
 public:
   T *data;
-  ListNode *next;
+  std::shared_ptr<ListNode<T>> next;
 
   ListNode(T *data) {
     this->data = data;
     this->next = NULL;
-  }
-
-  ~ListNode() {
-    if (this->next != NULL) delete(this->next);
-   
   }
 };
   
 template <class T>
 class List {
 public:
-  typedef ListNode<T>* node;
+  typedef std::shared_ptr<ListNode<T>> node;
   node head;
   
   List() {
     head = NULL;
   }
   
-  ~List() {
-    if (head != NULL) {
-      delete(head);
-    }
-  }
-  
   void push(T *new_data) {
     node tmp = head;
-    head = new ListNode<T>(new_data);
+    head = node(new ListNode<T>(new_data));
     head->next = tmp;
   }
 
@@ -77,6 +67,7 @@ public:
 };
 
 void list_unit_test();
+
 int main() {
   list_unit_test();
   return 0;
@@ -104,7 +95,7 @@ void list_unit_test() {
   printf("...passed \n");
 
   printf("testing filter... \n");
-  /*assert(l.length() == 0);
+  assert(l.length() == 0);
   int y = 1;
   int z = 2;
   l.push(&y);
@@ -134,7 +125,7 @@ void list_unit_test() {
   l.pop();
   l.pop();
   assert(l.length() == 0);
-  */
+  
   for (int i = 0; i < 10; i++) {
     l.push(&x[i]);
   }
