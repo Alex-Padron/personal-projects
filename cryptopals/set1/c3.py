@@ -1,4 +1,5 @@
 from c2 import xor
+from c1 import hex_to_base64
 import string
 
 letter_frequencies = {"e": 12.7, "t": 9.1, "a": 8.2, "o": 7.5, "i": 7.0, "n": 6.7, "s": 6.3, "h": 6.1, 
@@ -23,8 +24,8 @@ def score(sentence):
     
 def single_char_xor(string, char):
     s2 = char*len(string)
-    print("s2:", s2)
     print xor(string, s2)
+    print hex_to_base64(xor(string, s2))
     return xor(string, s2).decode("hex")
 
 if __name__ == "__main__":
@@ -33,23 +34,13 @@ if __name__ == "__main__":
     print(score("The other day I was walking down the street"))
     
     s = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
-    for c in string.printable:
-        try:
-            print(single_char_xor(s, c))
-        except:
-            pass
-
-"""
+    print(hex_to_base64(s))
+    
+    print("looping through chars")
     for i in range(128):
         c = chr(i)
         try:
-            assert(len(i) == 1)
-            print("c:", c, "i:", i, single_char_xor(s, c))
+            single_char_xor(s, c)
         except:
             pass
 
-
-    for i in range(16):
-        c = str(hex(i))
-        print("c:", c, "i:", i, single_char_xor(s, c))
-"""      
