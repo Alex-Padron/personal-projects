@@ -32,8 +32,16 @@ function sendEmails() {
     }
 }
 
+function colorString(bool) {
+    if (bool) {
+	return "red"
+    } else {
+	return "green"
+    }
+}
+
 function makeHTML(student, index) {
-    return "<p style=\"font-size: 50%\">" + student[0][0] + " " + student[1] + "</p><button onclick=\"clickIndex(" + index + ")\">change</button>"
+    return "</p><button style=\"color: " + colorString(student[1]) + "\" onclick=\"clickIndex(" + index + ")\">" + student[0][0] + "</button>"
 }
 
 function clickIndex(index) {
