@@ -1,7 +1,7 @@
 $(function() {
     error = "None"
     students = [["Alex", "alexander.f.padron@gmail.com"], ["Mom", "padron.robin@newfairfieldschools.org"], ["Also Mom", "robin.padron@gmail.com"]]
-    ip = "192.168.1.15"
+    ip = "192.168.1.4"
     tmp = students
     students = new Array(students.length)
     for (i = 0; i < students.length; i++) {
@@ -28,8 +28,8 @@ function sendEmails() {
 		http.send(params);
 	    }
 	}
+	setStudentsToFalse()
     }
-    setStudentsToFalse()
 }
 
 function makeHTML(student, index) {

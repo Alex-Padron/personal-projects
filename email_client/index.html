@@ -17,7 +17,8 @@
     <!-- dropdown menu for student errors -->
     <td width="20%" style="float: left">
       <div class="container">
-	<select id ="dropdown" name="Error Type" onmousedown="this.value='';" onchange="setError(this.value)">
+	<select id ="dropdown" onmousedown="this.value='';" onchange="setError(this.value)">
+	  <option value="None">Error Type</option>
 	  <option value="Your child did not turn in is homework <DATE>">No Homework</option>
 	  <option value="Your child did not bring a pencil to class <DATE>">No Pencil</option>
 	  <option value="Your child was not prepared for class <DATE>">Not Prepared</option>
