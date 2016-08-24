@@ -10,7 +10,8 @@ sed 's/index.js/index-tmp.js/g' index.html > index-tmp.html
 html=`pwd`
 echo current dir is $html
 index=$html'index-tmp.html'
-cygstart chrome $index
+echo index is $index
+cygstart chrome $html index-tmp.html
 python3 server.py
 
 
