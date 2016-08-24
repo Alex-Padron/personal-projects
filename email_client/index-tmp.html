@@ -19,15 +19,15 @@
       <div class="container">
 	<select id ="dropdown" onmousedown="this.value='';" onchange="setError(this.value)">
 	  <option value="None">Error Type</option>
-	  <option value="Your child did not turn in is homework <DATE>">No Homework</option>
-	  <option value="Your child did not bring a pencil to class <DATE>">No Pencil</option>
-	  <option value="Your child was not prepared for class <DATE>">Not Prepared</option>
+	  <option value="no homework">No Homework</option>
+	  <option value="not prepared">Not Prepared</option>
 	</select>
       </div>
       </br style="padding: 100px">
       <!-- show which error is selected -->
       <p id="errorDisplay"> Selected Error: None </p>
 
+      <!-- the date string that can be modified -->
       </br style="padding: 100px">
       <p> Date String </p>
       <input type="text" id="date" value="today">
@@ -36,6 +36,7 @@
     <td width="45%" style="float: left">
       <!-- button to actually send the emails -->
       <button type="button" onclick="sendEmails()"> Send Emails </button>
+      <p id="status"> Status: Nothing Sent </p>
       <!-- show the list of students with toggle -->
       <div class="row-fluid">
         <table align="left">
