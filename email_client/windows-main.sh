@@ -1,10 +1,11 @@
 #!/bin/bash
 
-for /f "delims=[] tokens=2" %%a in ('ping -4 %computername% -n 1 ^| findstr "["') do (set thisip=%%a)
-echo %thisip%
+ip=`route print | egrep "^ +0.0.0.0 +0.0.0.0 +" | gawk 'BEGIN { 
+metric=255; ip="0.0.0.0"; } { if ( $5 < metric ) { ip=$4; metric=$5; } } 
+END { printf("%s\n",ip); }'` 
+echo Current ip is $ip 1>&2 
+echo $ip 
 
-
-ip="$(C:\> ipconfig | grep -i 'Ip Address' | grep -v ': 19' | grep -v ': 0.' | grep -v ': 10.' | cut -b44-)"
 sed 's/<IPADDR>/ip/g' index.js > index-tmp.js
 sed 's/index.js/index-tmp.js/g' index.html > index-tmp.html
 echo "writing config for ip addr $ip"
