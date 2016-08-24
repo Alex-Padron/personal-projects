@@ -11,7 +11,7 @@ html=`pwd`
 echo current dir is $html
 index=$html'/index-tmp.html'
 echo index is $index
-cygstart chrome $index
+cygstart chrome "$index"
 python3 server.py
 
 
