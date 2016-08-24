@@ -1,7 +1,7 @@
 $(function() {
     error = "None"
     students = [["Alex", "alexander.f.padron@gmail.com"], ["Mom", "padron.robin@newfairfieldschools.org"], ["Also Mom", "robin.padron@gmail.com"], ["Scott", "scott.padron1.25@gmail.com"]]
-    ip = "<IPADDR>"
+    ip = "ip"
     tmp = students
     students = new Array(students.length)
     for (i = 0; i < students.length; i++) {
