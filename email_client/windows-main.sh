@@ -9,8 +9,8 @@ sed 's/<IPADDR>/'$IP'/g' index.js > index-tmp.js
 sed 's/index.js/index-tmp.js/g' index.html > index-tmp.html
 html=`pwd`
 echo current dir is $html
-cygstart chrome
-cygstart chrome  index-tmp.html
+index=$html'index-tmp.html'
+cygstart chrome $index
 python3 server.py
 
 
