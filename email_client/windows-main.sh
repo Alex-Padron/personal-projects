@@ -7,10 +7,8 @@ echo Updating temp files with ip $IP 1>&2
 
 sed 's/<IPADDR>/'$IP'/g' index.js > index-tmp.js
 sed 's/index.js/index-tmp.js/g' index.html > index-tmp.html
-html=`pwd`
-index=$html'/index-tmp.html'
-echo index is $index
-`cygstart chrome $index`
+cygstart chrome
+cygstart chrome index-tmp.html
 python3 server.py
 
 
