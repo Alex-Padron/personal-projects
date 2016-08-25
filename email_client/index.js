@@ -25,6 +25,44 @@ geometry_b3 =
 ["billiewatson1999@yahoo.com","Watson, Morgan C"],
 ["SandyZheng203@yahoo.com", "Zheng, Vicki"]]
 
+geometry_b4 = 
+[["anneallison423@gmail.com","Allison, Colleen V"],
+["allisonharry5@yahoo.com","Allison, Colleen V"],
+["palviti@footlocker.com","Alviti, Nicholas P"],
+["ericalviti@sbcglobal.net","Alviti, Nicholas P"],
+["ljariola24@gmail.com","Ariola, Elena M"],
+["nsariola@gmail.com","Ariola, Elena M"],
+["timberry101@aol.com","Berry, Nicole J"],
+["kattimberry@aol.com","Berry, Nicole J"],
+["lasirena1981@yahoo.com","Castellanos, Omar O"],
+["jomac681@yahoo.com","Cohen, Kayla M"],
+["Eastern10704@yahoo.com","Cohen, Kayla M"],
+["conboyclan10@charter.net","Conboy, Zachary T"],
+["rob.conboy@sodexo.com","Conboy, Zachary T"],
+["kdragon30@hotmail.com","Delancy, Ashley N"],
+["GTLOVE1969@yahoo.com","Doodnauth, Natalie"],
+["rich@richelberger.com","Elberger, Audrey C"],
+["Tom42668@yahoo.com","Evans, Ryan J"],
+["denise726@sbcglobal.net","Evans, Ryan J"],
+["kandmford@aol.com","Ford, Liam M"],
+["physlop@email.com","Hyslop, Jacqueline S"],
+["physlop@mail.com","Hyslop, Jacqueline S"],
+["jimnick3@sbcglobal.net","Kelly, Nicholas J"],
+["patrickdmaher@att.net","Maher, Shannon M"],
+["tracylmaher@att.net","Maher, Shannon M"],
+["wmac343434@yahoo.com","McCarthy, Joshua M"],
+["wildlifelinect@yahoo.com","McCarthy, Joshua M"],
+["asheleyny@yahoo.com","Mone, Katherine L"],
+["LisaMotto13@gmail.com","Motto, Juliana R"],
+["JoeLisa13@aol.com","Motto, Juliana R"],
+["porpora08@live.com","Porpora, Nicholas J"],
+["mmprchlik@gmail.com","Prchlik, Megan A"],
+["rustinadvantage@hotmail.com","Rustin, Lauren A"],
+["dcs049@gmail.com","Schappach, Kaitlin M"],
+["zegarellit@msn.com","Zegarelli, Maria J"],
+["tdcmzeg@msn.com","Zegarelli, Maria J"],
+["Lesly.salazar@newfairfieldschools.org","Salazar, Lesly"]]
+
 geometry_honors_1 = 
 [["alexander.f.padron@gmail.com", "Alex"], 
 ["padron.robin@newfairfieldschools.org", "Mom"], 
@@ -66,6 +104,8 @@ function setClass(cls) {
 	    students = geometry.slice(0)
 	} else if (cls == "geometry b3") {
 	    students = geometry_b3.slice(0)
+	} else if (cls == "geometry b4") {
+	    students = geometry_b4.slice(0)
 	}
 	loadStudents(students)
     }
