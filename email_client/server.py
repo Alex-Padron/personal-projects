@@ -30,7 +30,7 @@ class EmailHTTPServer_RequestHandler(BaseHTTPRequestHandler):
         msg = "\r\n".join([
             "From: " + fromaddr,
             "To: " + to_addrs[0],
-            "Subject: TEST",
+            "Subject: Classroom Alert",
             "",
             error
         ])
