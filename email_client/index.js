@@ -63,21 +63,96 @@ geometry_b4 =
 ["tdcmzeg@msn.com","Zegarelli, Maria J"],
 ["Lesly.salazar@newfairfieldschools.org","Salazar, Lesly"]]
 
-geometry_honors_1 = 
+geometry_a4 = 
+[["maltobelli@prattindustries.com","Altobelli, Michael F"],
+["malto95@charter.net","Altobelli, Michael F"],
+["pjbauer@verizon.net","Bauer, Jeremy E"],
+["therealabw@gmail.com","Bey-Wagner, Claudia J"],
+["catherine.wagner@sbcglobal.net","Bey-Wagner, Claudia J"],
+["darren@thecacaceteam.com","Cacace, Domenic M"],
+["cristiane@thecacaceteam.com","Cacace, Domenic M"],
+["casbar18@sbcglobal.net","Castle, Kiley G"],
+["jdeldin@bddinsurance.com","Deldin, Arianna R"],
+["jldeldin@charter.net","Deldin, Arianna R"],
+["dianebely@gmail.com","Grad, Madison A"],
+["jgcontract@charter.net","Green, Sean J"],
+["mark@hudson-mail.com","Hudson, Hazel V"],
+["auntgacki@earthlink.net","Hudson, Hazel V"],
+["mkanetkar@gmail.com","Kanetkar, Shreya M"],
+["Parag.kanetkar@oracle.com","Kanetkar, Shreya M"],
+["teri.linero@yahoo.com","Linero, Giovanni (Gio)"],
+["lizamckean@gmail.com","McKean, Caroline E"],
+["jamesmckeandvm@gmail.com","McKean, Caroline E"],
+["jmcmanemin@earthlink.net","McManemin, Sydney L"],
+["mcmaneminfamily@earthlink.net","McManemin, Sydney L"],
+["merritt81096@yahoo.com","Merritt, Jake M"],
+["merritt7468@yahoo.com","Merritt, Jake M"],
+["michelle.montaina@gmail.com","Montaina, Max P"],
+["lmontaina@westarmacau.com","Montaina, Max P"],
+["vilperlman@gmail.com","Perlman, Arianna L"],
+["lmregan2002@yahoo.com","Regan, Brendan"],
+["reganrd@gmail.com","Regan, Brendan"],
+["gail.t@sbcglobal.net","Rodriguez, Liana M"],
+["EWiebke@charter.net","Wiebke, Allison M"],
+["mwiebke@charter.net","Wiebke, Allison M"],
+["chip@parise.com","Williams Jr., Charles H"],
+["brenda.williams@pepsico.com","Williams Jr., Charles H"],
+["ZACKEO@aol.com","Zackeo, Jenni C"],
+["zarsman@gmail.com","Zars, Gregory E"],
+["nadinezars@charter.net","Zars, Gregory E"]]
+
+geometry_a2 = 
+[["gregbontempo8@hotmail.com","Bontempo, Ashley"],
+["chrystieb@live.com","Bontempo, Ashley"],
+["adrianborucinski@sbcglobal.net","Borucinski, Arianna M"],
+["Hoopstories@aol.com","Brawley, Wilson J"],
+["Jbtaffar@aol.com","Brawley, Wilson J"],
+["llcennamo@sbcglobal.net","Cennamo, Matthew B"],
+["Leftyf2003@yahoo.com","Clark, Fisher M"],
+["KIRICLARK16@gmail.com","Clark, Fisher M"],
+["jennhair513@gmail.com","Condon, Samantha E"],
+["dacfudge@aol.com","Costanzo, Julia M"],
+["zug7@aol.com","Costanzo, Julia M"],
+["kacupo@sbcglobal.net","Cupo, Angela R"],
+["raymond.donahue@waters.nestle.com","Donahue, Jack T"],
+["kathychan@charter.net","Donahue, Jack T"],
+["driscolls@comcast.net","Driscoll, Daniel H"],
+["sdriscoll23@charter.net","Driscoll, Daniel H"],
+["medge60@hotmail.com","Edgerton, Cole D"],
+["medgerton@copelandcoating.com","Edgerton, Cole D"],
+["kelly.anne.93@gmail.com","Farrell, Sydney"],
+["mike.farrell6@gmail.com","Farrell, Sydney"],
+["miandmon@sbcglobal.net","Forsberg, Erin E"],
+["brian.gephart@utas.utc.com","Gephart, Nicholas J"],
+["gephart.jean@newfairfieldschools.org","Gephart, Nicholas J"],
+["momoleo65@aol.com","Hernandez, Danielle M"],
+["jb@jbharchdesign.net","Hernandez, Danielle M"],
+["nimeri32@gmail.com","Imeri, Azra S"],
+["jamieson@sbcglobal.net","Jamieson, Sean H"],
+["stephaniekersting@yahoo.com","Kersting, Emma D"],
+["robertkersting@yahoo.com","Kersting, Emma D"],
+["jkunak@skadden.com","Kunak, Brian C"],
+["lakbase@yahoo.com","Kunak, Brian C"],
+["magnum36@earthlink.net","Lewis, Erin M"],
+["queensheba36@earthlink.net","Lewis, Erin M"],
+["mcinerney3@yahoo.com","McInerney, John W"],
+["mcinerney4@yahoo.com","McInerney, John W"],
+["salernobeagles@aol.com","Salerno, Victoria M"],
+["agscocozza@sbcglobal.net","Scocozza, Ronan J"],
+["kathleenteklits@gmail.com","Teklits, Allison R"],
+["andrewteklits@gmail.com","Teklits, Allison R"],
+["sscaterina@hotmail.com","Tripaldi Jr., Daniel J"],
+["christi.walker@gmail.com","Walker, Spencer J"],
+["johnr_walker@hotmail.com","Walker, Spencer J"],
+["bkwargin@charter.net","Wargin, Ailis G"],
+["kath.warg@gmail.com","Wargin, Ailis G"]]
+
+test = 
 [["alexander.f.padron@gmail.com", "Alex"], 
 ["padron.robin@newfairfieldschools.org", "Mom"], 
+["scott.padron1.25@gmail.com", "Scott"],
 ["robin.padron@gmail.com", "Also Mom"]]
-
-algebra_1 = 
-[["alexander.f.padron@gmail.com", "Alex"], 
-["padron.robin@newfairfieldschools.org", "Mom"], 
-["scott.padron1.25@gmail.com", "Scott"]]
     
-geometry = 
-[["padron.robin@newfairfieldschools.org", "Mom"], 
-["robin.padron@gmail.com", "Also Mom"], 
-["scott.padron1.25@gmail.com", "Scott"]]
-
 not_prepared = "Dear Parent, ::Your child was not prepared for class <DATE>. Since spare items are generally not provided, coming to class unprepared might prevent your child from participating fully in the class. ::Please make sure that your child has all the required supplies, and please remind him or her to bring them to class."
 
 no_homework = "Dear Parent, ::Your child did not turn in his homework that was due <DATE>. ::Completing homework is critical for student success. Strugglig students have many resources available to them. The Student Journal has a concise summary of the section notes; the textbook has clear, worked-out examples. The online version of the textbook has a video of each example, for students who find following the textbook challenging. Students can also get extra help during their study hall by going to the Learning Center. In addition, I am almost always available for extra help before and after school, as well as during my office hours."
@@ -96,16 +171,24 @@ function fileToList(str) {
 function setClass(cls) {
     if (cls != "None") {
 	clearStudents()
-	if (cls == "geometry honors 1") {
-	    students = geometry_honors_1.slice(0)
-	} else if (cls == "algebra 1") {
-	    students = algebra_1.slice(0)
-	} else if (cls == "geometry") {
-	    students = geometry.slice(0)
-	} else if (cls == "geometry b3") {
+	switch(cls) {
+	case "geometry b3":
 	    students = geometry_b3.slice(0)
-	} else if (cls == "geometry b4") {
+	    break
+	case "geometry b4":
 	    students = geometry_b4.slice(0)
+	    break
+	case "geometry a2":
+	    students = geometry_a2.slice(0)
+	    break
+	case "geometry a4":
+	    students = geometry_a4.slice(0)
+	    break
+	case "test":
+	    students = test.slice(0)
+	    break
+	default:
+	    console.log("bad class name")
 	}
 	loadStudents(students)
     }
