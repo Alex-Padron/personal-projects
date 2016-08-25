@@ -143,7 +143,7 @@ function makeHTML(index) {
 function clickIndex(index) {
     showEmailStatus(false,false)
     students[index].sendEmail = !students[index].sendEmail
-    $("#studentContainer").get(0).rows[students.length - index - 1].innerHTML = makeHTML(index)
+    $("#studentContainer").get(0).rows[index].innerHTML = makeHTML(index)
 }
 
 function loadStudents(students) {
@@ -167,6 +167,6 @@ function clearStudents() {
 function setStudentsToFalse() {
     for (i = 0; i < students.length; i++) {
 	students[i].sendEmail = false
-	$("#studentContainer").get(0).rows[students.length - i - 1].innerHTML = makeHTML(i)
+	$("#studentContainer").get(0).rows[i].innerHTML = makeHTML(i)
     }
 }
