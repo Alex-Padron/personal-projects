@@ -147,12 +147,40 @@ geometry_a2 =
 ["bkwargin@charter.net","Wargin, Ailis G"],
 ["kath.warg@gmail.com","Wargin, Ailis G"]]
 
+honors_calculus_a3 = 
+[["ars4Brock@yahoo.com","Brockner, Fiona I"],
+["chemero@sbcglobal.net","Chemero, Courtney A"],
+["Flodauti@gmail.com","Dauti, Edona"],
+["sev.dauti@gmail.com","Dauti, Edona"],
+["kelly.anne.93@gmail.com","Farrell, Michael W"],
+["mike.farrell6@gmail.com","Farrell, Michael W"],
+["tlhewitt1@charter.net","Hewitt, Charles W"],
+["bizeema3@aol.com","King, Emily"],
+["tootsie40@charter.net","Lindquist, Mikayla M"],
+["lorijmccluskey@yahoo.com","McCluskey, Joseph M"],
+["joannemilano@charter.net","Milano, Lucy M"],
+["joanne.milano@aol.com","Milano, Lucy M"],
+["jensbarra@sbcglobal.net","Sbarra, Pamela K"],
+["boo125@sbcglobal.net","Sbordone, Kimberly S"],
+["esbordone@newfairfield.org","Sbordone, Kimberly S"],
+["elizabethsproule@yahoo.com","Sproule, Joshua R"],
+["jcmoose1028@yahoo.com","Sproule, Joshua R"],
+["stauro@sbcglobal.net","Tauro, Frederick J"],
+["kvanvlack@charter.net","Van Vlack, Kyle J"],
+["dmvanvlack@charter.net","Van Vlack, Kyle J"],
+["tom@legacydevelopmentllc.com","Yaroscak, Courtney A"],
+["kyaroscak@sbcglobal.net","Yaroscak, Courtney A"]]
+
 test = 
 [["alexander.f.padron@gmail.com", "Alex"], 
 ["padron.robin@newfairfieldschools.org", "Mom"], 
 ["scott.padron1.25@gmail.com", "Scott"],
 ["robin.padron@gmail.com", "Also Mom"]]
-    
+
+/*
+For ease of parsing, ':' represents a newline. To get two paragraphs with a space between them,
+simply use '::' as shown below
+*/
 not_prepared = "Dear Parent, ::Your child was not prepared for class <DATE>. Since spare items are generally not provided, coming to class unprepared might prevent your child from participating fully in the class. ::Please make sure that your child has all the required supplies, and please remind him or her to bring them to class."
 
 no_homework = "Dear Parent, ::Your child did not turn in his homework that was due <DATE>. ::Completing homework is critical for student success. Strugglig students have many resources available to them. The Student Journal has a concise summary of the section notes; the textbook has clear, worked-out examples. The online version of the textbook has a video of each example, for students who find following the textbook challenging. Students can also get extra help during their study hall by going to the Learning Center. In addition, I am almost always available for extra help before and after school, as well as during my office hours."
@@ -162,11 +190,6 @@ $(function() {
     ip = "<IPADDR>"
     students = []
 });
-
-function fileToList(str) {
-    list = str.split("\n")
-    console.log(list)
-}
 
 function setClass(cls) {
     if (cls != "None") {
@@ -183,6 +206,9 @@ function setClass(cls) {
 	    break
 	case "geometry a4":
 	    students = geometry_a4.slice(0)
+	    break
+	case "honors calculus a3":
+	    students = honors_calculus_a3.slice(0)
 	    break
 	case "test":
 	    students = test.slice(0)
@@ -212,18 +238,19 @@ function showEmailStatus(sent_any, failed_any) {
 }
 
 function getError(error) {
-    if (error == "no homework") {
+    switch (error) {
+    case "no homework":
 	return no_homework
-    } else if (error == "not prepared") {
+    case "not prepared":
 	return not_prepared
-    } else {
+    default:
 	return error
     }
 }
+
 function sendEmails() {
     if (error != "None") {
 	status_text = $("#status").get(0)
-	console.log(status_text)
 	status_text.innerHTML = "Status: pending"
 	sent_any = false
 	failed_any = false

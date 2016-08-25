@@ -14,6 +14,7 @@
     <td width="10%" style="float: left">
       <p> </p>
     </td>
+    <!-- dropdown to select a class -->
     <td width="10%" style="float: left">
 	<select id ="class" onmousedown="this.value='';" onchange="setClass(this.value)">
 	  <option value="None">Class</option>
@@ -21,6 +22,7 @@
 	  <option value="geometry b4">Geometry B4</option>
 	  <option value="geometry a4">Geometry A4</option>
 	  <option value="geometry a2">Geometry A2</option>
+	  <option value="honors calculus a3">Honors Calculus A3</option>
 	  <option value="test">TEST</option>
 	</select>
       </div>
@@ -38,8 +40,7 @@
       <!-- show which error is selected -->
       <p id="errorDisplay"> Selected Error: None </p>
 
-      <!-- the <br>
-	   date string that can be modified -->
+      <!-- the date string that can be modified -->
       </br style="padding: 100px">
       <p> Date String </p>
       <input type="text" id="date" value="today">
@@ -49,7 +50,8 @@
       <!-- button to actually send the emails -->
       <button type="button" onclick="sendEmails()"> Send Emails </button>
       <p id="status"> Status: Nothing Sent </p>
-      <!-- show the list of students with toggle -->
+      <!-- show the list of students with toggle. Starts out empty and gets filled 
+	   when a class is selected -->
       <div class="row-fluid">
         <table align="left">
           <tbody id="studentContainer" class="h3">          
