@@ -120,7 +120,6 @@ function sendEmails() {
 		}
 	    }
 	}
-	console.log("sent any is ", sent_any, " failed any is ", failed_any)
 	showEmailStatus(sent_any, failed_any)
 	setStudentsToFalse()
     }
