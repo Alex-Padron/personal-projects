@@ -1,5 +1,6 @@
 geometry_b3 = 
 [["ZiniAlimi@sbcglobal.net", "Alimi, Kimete"],
+["juliarosana@hotmail.com","Brizido, Gloria"],
 ["paul.bruno@mac.com","Bruno, Andrew T"],
 ["rsdenike1@hotmail.com","Denike, Alyssa C"],
 ["afata@lakelandschools.org","Fata, Anthony C (T.J.)"],
@@ -183,7 +184,7 @@ simply use '::' as shown below
 */
 not_prepared = "Dear Parent, ::Your child was not prepared for class <DATE>. Since spare items are generally not provided, coming to class unprepared might prevent your child from participating fully in the class. ::Please make sure that your child has all the required supplies, and please remind him or her to bring them to class."
 
-no_homework = "Dear Parent, ::Your child did not turn in his homework that was due <DATE>. ::Completing homework is critical for student success. Strugglig students have many resources available to them. The Student Journal has a concise summary of the section notes; the textbook has clear, worked-out examples. The online version of the textbook has a video of each example, for students who find following the textbook challenging. Students can also get extra help during their study hall by going to the Learning Center. In addition, I am almost always available for extra help before and after school, as well as during my office hours."
+no_homework = "Dear Parent, ::Your child did not turn in the homework that was due <DATE>. ::Completing homework is critical for student success. Struggling students have many resources available to them. The Student Journal has a concise summary of the section notes; the textbook has clear, worked-out examples. The online version of the textbook has a video of each example, for students who find following the textbook challenging. Students can also get extra help during their study hall by going to the Learning Center. ::In addition, I am almost always available for extra help before and after school, as well as during my office hours."
 
 $(function() {
     error = "None"

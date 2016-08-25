@@ -34,7 +34,6 @@ class EmailHTTPServer_RequestHandler(BaseHTTPRequestHandler):
             "",
             error
         ])
-        return 
         server_ssl.sendmail(fromaddr, to_addrs, msg)
         print("sent mail successfully")
         return
