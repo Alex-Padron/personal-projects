@@ -22,7 +22,7 @@ class EmailHTTPServer_RequestHandler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header('Access-Control-Allow-Origin', '*')
         self.end_headers()
-
+        
         split = str(self.data_string).split(":")
         to_addrs = [split[0][2:]]
         error = rreplace("\r\n".join(split[1:]), "'", "", 1)
@@ -34,6 +34,7 @@ class EmailHTTPServer_RequestHandler(BaseHTTPRequestHandler):
             "",
             error
         ])
+        return 
         server_ssl.sendmail(fromaddr, to_addrs, msg)
         print("sent mail successfully")
         return

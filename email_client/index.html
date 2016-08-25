@@ -14,6 +14,16 @@
     <td width="10%" style="float: left">
       <p> </p>
     </td>
+    <td width="10%" style="float: left">
+	<select id ="class" onmousedown="this.value='';" onchange="setClass(this.value)">
+	  <option value="None">Class</option>
+	  <option value="geometry honors 1">Geometry Honors 1</option>
+	  <option value="algebra 1">Algebra 1</option>
+	  <option value="geometry">Geometry</option>
+	  <option value="geometry b3">Geometry B3</option>
+	</select>
+      </div>
+    </td>
     <!-- dropdown menu for student errors -->
     <td width="20%" style="float: left">
       <div class="container">
@@ -27,7 +37,8 @@
       <!-- show which error is selected -->
       <p id="errorDisplay"> Selected Error: None </p>
 
-      <!-- the date string that can be modified -->
+      <!-- the <br>
+	   date string that can be modified -->
       </br style="padding: 100px">
       <p> Date String </p>
       <input type="text" id="date" value="today">

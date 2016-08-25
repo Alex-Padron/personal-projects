@@ -1,16 +1,75 @@
+geometry_b3 = 
+[["ZiniAlimi@sbcglobal.net", "Alimi, Kimete"],
+["paul.bruno@mac.com","Bruno, Andrew T"],
+["rsdenike1@hotmail.com","Denike, Alyssa C"],
+["afata@lakelandschools.org","Fata, Anthony C (T.J.)"],
+["aefata@sbcglobal.net","Fata, Anthony C (T.J.)"],
+["egarnecho@gmail.com","Garnecho-Lopez, Davin L"],
+["kiggles74@aol.com","Guariglia, Shaelyn D"],
+["moneyismyshot@aol.com","Guariglia, Shaelyn D"],
+["maritza1169@hotmail.com","Halas, Scot T"],
+["hayden13mid@att.net","Hayden, Christopher E"],
+["llambropoulos@sbcglobal.net","Lambropoulos, Stylianos (Stelios)"],
+["CTMaglio@aol.com","Maglio, Julianna D"],
+["donna_marciante@sbcglobal.net","Marciante, Jennifer"],
+["martinson23@gmail.com","Martinson, William E"],
+["nas714@msn.com","Nason, Ryan"],
+["fernandapesarini@hotmail.com","Pesarini, Ana Clara A"],
+["pesarini_stenio@yahoo.com","Pesarini, Ana Clara A"],
+["Quinn0056@att.net","Quinn, Kerrigan A"],
+["KevinQ@us.ibm.com","Quinn, Kerrigan A"],
+["kwroe2211@gmail.com","Roe, Thomas S"],
+["milkshakecel@aol.com","Stelzel, Andrew R"],
+["allycat726@gmail.com","Turner, Jillian S"],
+["lvitrit@gmail.com","Vitrit, Joseph M"],
+["billiewatson1999@yahoo.com","Watson, Morgan C"],
+["SandyZheng203@yahoo.com", "Zheng, Vicki"]]
+
+geometry_honors_1 = 
+[["alexander.f.padron@gmail.com", "Alex"], 
+["padron.robin@newfairfieldschools.org", "Mom"], 
+["robin.padron@gmail.com", "Also Mom"]]
+
+algebra_1 = 
+[["alexander.f.padron@gmail.com", "Alex"], 
+["padron.robin@newfairfieldschools.org", "Mom"], 
+["scott.padron1.25@gmail.com", "Scott"]]
+    
+geometry = 
+[["padron.robin@newfairfieldschools.org", "Mom"], 
+["robin.padron@gmail.com", "Also Mom"], 
+["scott.padron1.25@gmail.com", "Scott"]]
+
+not_prepared = "Dear Parent, ::Your child was not prepared for class <DATE>. Since spare items are generally not provided, coming to class unprepared might prevent your child from participating fully in the class. ::Please make sure that your child has all the required supplies, and please remind him or her to bring them to class."
+
+no_homework = "Dear Parent, ::Your child did not turn in his homework that was due <DATE>. ::Completing homework is critical for student success. Strugglig students have many resources available to them. The Student Journal has a concise summary of the section notes; the textbook has clear, worked-out examples. The online version of the textbook has a video of each example, for students who find following the textbook challenging. Students can also get extra help during their study hall by going to the Learning Center. In addition, I am almost always available for extra help before and after school, as well as during my office hours."
+
 $(function() {
     error = "None"
-    students = [["Alex", "alexander.f.padron@gmail.com"], ["Mom", "padron.robin@newfairfieldschools.org"], ["Also Mom", "robin.padron@gmail.com"], ["Scott", "scott.padron1.25@gmail.com"]]
     ip = "<IPADDR>"
-    for (i = 0; i < students.length; i++) {
-	students[i] = {name: students[i][0], email: students[i][1], sendEmail: false}
-    }
-    loadStudents(students)
-    not_prepared = "Dear Parent, ::Your child was not prepared for class <DATE>. Since spare items are generally not provided, coming to class unprepared might prevent your child from participating fully in the class. ::Please make sure that your child has all the required supplies, and please remind him or her to bring them to class."
-
-    no_homework = "Dear Parent, ::Your child did not turn in his homework that was due <DATE>. ::Completing homework is critical for student success. Strugglig students have many resources available to them. The Student Journal has a concise summary of the section notes; the textbook has clear, worked-out examples. The online version of the textbook has a video of each example, for students who find following the textbook challenging. Students can also get extra help during their study hall by going to the Learning Center. In addition, I am almost always available for extra help before and after school, as well as during my office hours."
+    students = []
 });
 
+function fileToList(str) {
+    list = str.split("\n")
+    console.log(list)
+}
+
+function setClass(cls) {
+    if (cls != "None") {
+	clearStudents()
+	if (cls == "geometry honors 1") {
+	    students = geometry_honors_1.slice(0)
+	} else if (cls == "algebra 1") {
+	    students = algebra_1.slice(0)
+	} else if (cls == "geometry") {
+	    students = geometry.slice(0)
+	} else if (cls == "geometry b3") {
+	    students = geometry_b3.slice(0)
+	}
+	loadStudents(students)
+    }
+}
 function setError(text) {
     error = text
     $("#errorDisplay").html("Selected Error: " + text)
@@ -88,11 +147,20 @@ function clickIndex(index) {
 }
 
 function loadStudents(students) {
+    for (i = 0; i < students.length; i++) {
+	students[i] = {name: students[i][1], email: students[i][0], sendEmail: false}
+    }
     studentContainer = $("#studentContainer").get(0)
-    length = students.length
-    for (i = 0; i < length; i++) {
-	row = studentContainer.insertRow(0);
+    for (i = 0; i < students.length; i++) {
+	row = studentContainer.insertRow(-1);
 	row.innerHTML = makeHTML(i)
+    }
+}
+
+function clearStudents() {
+    studentContainer = $("#studentContainer").get(0)
+    for (i = 0; i < students.length; i++) {
+	studentContainer.deleteRow(0)
     }
 }
 
