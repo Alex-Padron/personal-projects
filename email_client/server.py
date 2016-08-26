@@ -1,4 +1,4 @@
-
+import datetime
 from http.server import BaseHTTPRequestHandler
 from http.server import HTTPServer
 from urllib.parse import urlparse, parse_qs
@@ -15,6 +15,10 @@ print("logged in to email service")
 def rreplace(s, old, new, occurrence):
     li = s.rsplit(old, occurrence)
     return new.join(li)
+
+def log(to_addr):
+    with open("log.txt", "a") as f:
+        f.write(to_addr + ": " + datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y") + "\n")
 
 class EmailHTTPServer_RequestHandler(BaseHTTPRequestHandler):
     def do_POST(self):
@@ -35,6 +39,7 @@ class EmailHTTPServer_RequestHandler(BaseHTTPRequestHandler):
             error
         ])
         server_ssl.sendmail(fromaddr, to_addrs, msg)
+        log(to_addrs[0])
         print("sent mail successfully")
         return
 
