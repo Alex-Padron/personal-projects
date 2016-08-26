@@ -222,7 +222,6 @@ function setClass(cls) {
 }
 function setError(text) {
     error = text
-    $("#errorDisplay").html("Selected Error: " + text)
 }
 
 function showEmailStatus(sent_any, failed_any) {
