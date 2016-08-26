@@ -7,16 +7,15 @@
     <script src="index.js"></script>
     <link rel="stylesheet" href="css/bootstrap.min.css">
   </head>
-
   
-<table width="100%" style="float: center;">
-  <tr>
-    <td width="10%" style="float: left">
-      <p> </p>
-    </td>
-    <!-- dropdown to select a class -->
-    <td width="10%" style="float: left">
-	<select id ="class" onmousedown="this.value='';" onchange="setClass(this.value)">
+  <table width="100%" style="float: center;">
+    <tr>
+      <td width="10%" style="float: left">
+	<p> </p>
+      </td>
+      <!-- dropdown to select a class -->
+      <td width="15%" style="float: left">
+	<select id="class" style="margin-bottom: 50px" onmousedown="this.value='';" onchange="setClass(this.value)">
 	  <option value="None">Class</option>
 	  <option value="geometry b3">Geometry B3</option>
 	  <option value="geometry b4">Geometry B4</option>
@@ -25,36 +24,37 @@
 	  <option value="honors calculus a3">Honors Calculus A3</option>
 	  <option value="test">TEST</option>
 	</select>
-      </div>
-    </td>
-    <!-- dropdown menu for student errors -->
-    <td width="20%" style="float: left">
-      <div class="container">
-	<select id ="dropdown" onmousedown="this.value='';" onchange="setError(this.value)">
-	  <option value="None">Error Type</option>
-	  <option value="no homework">No Homework</option>
-	  <option value="not prepared">Not Prepared</option>
-	</select>
-      </div>
-      </br style="padding: 200px">
-      <!-- the date string that can be modified -->
-      <p> Date String </p>
-      <input type="text" id="date" value="today">
-    </td>
 
-    <td width="45%" style="float: left">
-      <!-- button to actually send the emails -->
-      <button type="button" onclick="sendEmails()"> Send Emails </button>
-      <p id="status"> Status: Nothing Sent </p>
-      <!-- show the list of students with toggle. Starts out empty and gets filled 
-	   when a class is selected -->
-      <div class="row-fluid">
-        <table align="left">
-          <tbody id="studentContainer" class="h3">          
-          </tbody>
-        </table>
-      </div>
-    </td>
-  </tr>
+	<!-- dropdown menu for student errors -->
+	<div class="container">
+	  <select id ="dropdown" style="margin-bottom: 50px" onmousedown="this.value='';" 
+		  onchange="setError(this.value)">
+	    <option value="None">Error Type</option>
+	    <option value="no homework">No Homework</option>
+	    <option value="not prepared">Not Prepared</option>
+	  </select>
+	</div>
+
+	<br style="padding: 200px">
+
+	<!-- the date string that can be modified -->
+	<p> Date String </p>
+	<input type="text" id="date" value="today">
+      </td>
+      
+      <td width="30%" style="float: left">
+	<!-- button to actually send the emails -->
+	<button type="button" onclick="sendEmails()"> Send Emails </button>
+	<p id="status"> Status: Nothing Sent </p>
+	<!-- show the list of students with toggle. Starts out empty and gets filled 
+	     when a class is selected -->
+	<div class="row-fluid">
+          <table align="left">
+            <tbody id="studentContainer" class="h3">          
+            </tbody>
+          </table>
+	</div>
+      </td>
+    </tr>
 </table>
-
+  
