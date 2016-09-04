@@ -4,13 +4,8 @@ from http.server import HTTPServer
 from urllib.parse import urlparse, parse_qs
 import smtplib
 
-fromaddr = "padron.robin@newfairfieldschools.org"
-password = "1denmw99"
-
-server_ssl = smtplib.SMTP_SSL("smtp.gmail.com", 465)
-server_ssl.ehlo() 
-server_ssl.login(fromaddr, password)  
-print("logged in to email service")
+fromaddr = "....."
+password = "....."
 
 def rreplace(s, old, new, occurrence):
     li = s.rsplit(old, occurrence)
@@ -25,8 +20,7 @@ class EmailHTTPServer_RequestHandler(BaseHTTPRequestHandler):
         self.data_string = self.rfile.read(int(self.headers['Content-Length']))
         self.send_response(200)
         self.send_header('Access-Control-Allow-Origin', '*')
-        self.end_headers()
-        
+        self.end_headers()        
         split = str(self.data_string).split(":")
         to_addrs = [split[0][2:]]
         error = rreplace("\r\n".join(split[1:]), "'", "", 1)
@@ -44,6 +38,11 @@ class EmailHTTPServer_RequestHandler(BaseHTTPRequestHandler):
         return
 
 def run():
+    server_ssl = smtplib.SMTP_SSL("smtp.gmail.com", 465)
+    server_ssl.ehlo() 
+    server_ssl.login(fromaddr, password)  
+    print("logged in to email service")
+
     server_address = ('', 8080)
     httpd = HTTPServer(server_address, EmailHTTPServer_RequestHandler)
     print('running server...')

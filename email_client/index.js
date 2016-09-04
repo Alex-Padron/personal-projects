@@ -215,7 +215,7 @@ function setClass(cls) {
 	    students = test.slice(0)
 	    break
 	default:
-	    console.log("bad class name")
+	    console.log("bad class name", cls)
 	}
 	loadStudents(students)
     }
@@ -233,7 +233,7 @@ function showEmailStatus(sent_any, failed_any) {
     } else if (!sent_any && failed_any) {
 	status_text.innerHTML = "Status: Sending failed"
     } else {
-	status_text.innerHTML = "Status: Bad state - some emails succeeded and some failed"
+	status_text.innerHTML = "Status: Bad state - some emails succeeded and some failed, check python server or email history"
     }
 }
 
@@ -275,8 +275,8 @@ function sendEmails() {
     }
 }
 
-function colorString(bool) {
-    if (bool) {
+function colorString(sendEmail) {
+    if (sendEmail) {
 	return "red"
     } else {
 	return "green"
