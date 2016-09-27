@@ -1,4 +1,4 @@
-from list import List
+from list import List #custom list implementation for chaining
 import hashlib
 
 class kv_node:

@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Code Timer</title>
+    <script src="jquery-2.2.3.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="index.js"></script>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+  </head>
+  
+  <table width="100%" style="float: center;">
+    <tr>
+      <td width="10%" style="float: left">
+	<p> </p>
+      </td>
+    
+      <td width="20%" style="float: left">
+	<br style="padding: 200px">
+	<button type="button" onclick="start_timer('Tinkering')"> Tinkering </button> 
+	<br style="padding: 200px">
+	<button type="button" onclick="start_timer('Reading')"> Reading </button> 
+	<br style="padding: 200px">
+	<button type="button" onclick="start_timer('Developing')"> Developing </button> 
+	<br style="padding: 200px">
+	<button type="button" onclick="start_timer('Pause')"> Pause </button> 
+      </td>
+
+      <td width="30%" style="float: left">
+	<br style="padding: 200px">
+	<p id="Tinkering"> Tinkering </p>
+	<br style="padding: 200px">
+	<p id="Reading"> Reading </p>
+	<br style="padding: 200px">
+	<p id="Developing"> Developing</p>
+      </td>
+    
+    </tr>
+  </table>
+  

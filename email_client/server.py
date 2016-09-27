@@ -4,8 +4,12 @@ from http.server import HTTPServer
 from urllib.parse import urlparse, parse_qs
 import smtplib
 
-fromaddr = "....."
-password = "....."
+fromaddr = "padron.robin@newfairfieldschools.org"
+password = "1denmw99"
+server_ssl = smtplib.SMTP_SSL("smtp.gmail.com", 465)
+server_ssl.ehlo() 
+server_ssl.login(fromaddr, password)  
+print("logged in to email service")
 
 def rreplace(s, old, new, occurrence):
     li = s.rsplit(old, occurrence)
@@ -38,11 +42,6 @@ class EmailHTTPServer_RequestHandler(BaseHTTPRequestHandler):
         return
 
 def run():
-    server_ssl = smtplib.SMTP_SSL("smtp.gmail.com", 465)
-    server_ssl.ehlo() 
-    server_ssl.login(fromaddr, password)  
-    print("logged in to email service")
-
     server_address = ('', 8080)
     httpd = HTTPServer(server_address, EmailHTTPServer_RequestHandler)
     print('running server...')
