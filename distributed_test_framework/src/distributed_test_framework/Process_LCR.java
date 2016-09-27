@@ -2,7 +2,7 @@ package distributed_test_framework;
 
 import java.util.ArrayList;
 
-public class Process_user_defined extends Process_builtin implements Process {
+public class Process_LCR extends Process_builtin implements Process {
 	//user defined state
 	private boolean sent_highest_seen;
 	private int highest_seen;
@@ -10,7 +10,7 @@ public class Process_user_defined extends Process_builtin implements Process {
 	private boolean is_leader;
 	private boolean is_halted;
 	
-	public Process_user_defined(int UID) {
+	public Process_LCR(int UID) {
 		this.highest_seen = UID;
 		this.sent_highest_seen = false;
 		this.UID = UID;

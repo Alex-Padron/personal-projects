@@ -10,7 +10,7 @@ public class Controller {
 		ArrayList<Process> processes = new ArrayList<>();
 		//create 10 nodes with UID's 0 to 9 and addresses equal to their UID's
 		for (int i = 0; i < 100; i++) {
-			Process new_process = new Process_user_defined(i);
+			Process new_process = new Process_LCR(i);
 			new_process.set_address(i);
 			processes.add(new_process);
 		}
