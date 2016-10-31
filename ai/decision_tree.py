@@ -1,4 +1,80 @@
 
+class Actors:
+    def __init__(self, actors):
+        self.actors = actors
+
+    #get a weighted score for how unique the set is 
+    def score(self):
+        counts = {}
+        for actor in self.actors:
+            inc (counts, actor.classification)
+            delta = 0
+            total = 0 
+        if len (counts) == 1:
+            return 1
+        for x in counts:
+            for y in counts: 
+                if x != y:
+                    delta += (counts[x] - counts[y]) ** 2
+                    total += counts[x]
+                    total += counts[y]
+        return 1.0*delta/total
+
+    #split the actors into subsets based on the field
+    def split (self, field):
+        groups = {}
+        for actor in self.actors:
+            attr = actor.attrs[field]
+            set_or_append (groups, attr, actor)
+        return groups
+    
+    def arity (actors):
+        assert len(actors) > 0
+        arity = len(actors[0].attrs)
+        for actor in actors:
+            assert arity == len(actor.attrs)
+        return arity 
+
+def best_split (actors):
+    assert len(actors) > 0 
+    best_score = -1
+    best_split = None
+    best_field = None 
+    for field in range(arity(actors)):
+        groups = split(actors,field)
+        group_score = 0 
+        for attr in groups:
+            group_score += score (groups[attr])
+        if group_score > best_score:
+            best_score = group_score 
+            best_split = groups
+            best_field = field
+    return best_split, best_field
+
+    def is_homogenous (self):
+        if len(actors) == 0:
+            return False, None 
+        classification = actors[0].classification
+        for actor in actors:
+            if actor.classification != classification:
+                return False, None
+        return True, classification
+
+def generate (actors):
+    h, classification = is_homogenous(actors)
+    #if the group is homogenous, return the end node 
+    if h:
+        return Node(0, classification, True)
+    groups, field = best_split(actors)
+    possibilities = {}
+    for attr in groups:
+        possibilities[attr] = generate(groups[attr])
+    return Node(field, possibilities, False)
+
+
+
+
+        
 def field_name (field, field_names):
     if field in field_names:
         return field_names[field]
@@ -17,73 +93,7 @@ def set_or_append (values, key, val):
     else:
         values[key] = [val]
 
-#get a weighted score for how unique the set is 
-def score (actors):
-    counts = {}
-    for actor in actors:
-        inc (counts, actor.classification)
-    delta = 0
-    total = 0 
-    if len (counts) == 1:
-        return 1
-    for x in counts:
-        for y in counts: 
-            if x != y:
-                delta += (counts[x] - counts[y]) ** 2
-                total += counts[x]
-                total += counts[y]
-    return 1.0*delta/total
-
-#split the actors into subsets based on the field
-def split (actors, field):
-    groups = {}
-    for actor in actors:
-        attr = actor.attrs[field]
-        set_or_append (groups, attr, actor)
-    return groups
     
-def arity (actors):
-    assert len(actors) > 0
-    arity = len(actors[0].attrs)
-    for actor in actors:
-        assert arity == len(actor.attrs)
-    return arity 
-
-def best_split (actors):
-    assert len(actors) > 0 
-    best_score = -1
-    best_split = None
-    best_field = None 
-    for field in range(arity(actors)):
-        groups = split(actors,field)
-        group_score = 0 
-        for attr in groups:
-            group_score += score (groups[attr])
-        if group_score > best_score:
-            best_score = group_score 
-            best_split = groups
-            best_field = field
-    return best_split, best_field
-
-def is_homogenous (actors):
-    if len(actors) == 0:
-        return False, None 
-    classification = actors[0].classification
-    for actor in actors:
-        if actor.classification != classification:
-            return False, None
-    return True, classification
-
-def generate (actors):
-    h, classification = is_homogenous(actors)
-    #if the group is homogenous, return the end node 
-    if h:
-        return Node(0, classification, True)
-    groups, field = best_split(actors)
-    possibilities = {}
-    for attr in groups:
-        possibilities[attr] = generate(groups[attr])
-    return Node(field, possibilities, False)
 
 class Node:
     #field defines which field within the actors to search over.
