@@ -12,6 +12,13 @@ from server_state import Server_state
 """
 TCP server implementation based on UDP. Uses first 8 bytes of message as
 header
+
+@param port {int} to bind to
+@param on_data {function(data, addr) -> bytes} called when a packet is recieved
+@param window_size {int} size of window of responses
+@param live_timeout {float} seconds to keep a client alive after not seeing a
+heartbeat
+@param heartbeat_timeout {float} how often to send heartbeats
 """
 class TCP_server:
     def __init__(self, port, on_data, window_size, live_timeout,
@@ -71,7 +78,6 @@ if __name__ == "__main__":
     def log_data(data, addr):
                     print("Logging Data", data, "From Addr", addr)
                     return bytes("Hello Back", "utf-8")
-
     port = 3000
     window_size = 10
     live_timeout = 1
