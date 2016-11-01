@@ -64,15 +64,10 @@ public class Master implements Runnable {
 	    if (client_data_raw == null) return;
 	    MasterMessage client_message =
 		this.parser.fromJson(client_data_raw, MasterMessage.class);
-	    System.out.println("Server responding to client request");
-	    System.out.println("raw: " + client_data_raw);
-	    System.out.println("message " + client_message);
-	    System.out.println("Message type is " + client_message.type);
 	    switch (client_message.type) {
 	    case REGISTER:
 		this.data.add_client(client_message.name.get(),
 				     addr_from_msg(client_message));
-		System.out.println("Server writing bytes");
 		to_client.writeBytes(parser.toJson(register_response()));
 		break;
 	    case QUERY:
@@ -83,7 +78,6 @@ public class Master implements Runnable {
 			      filled_query_response(
 			      this.data.get_client(name))));
 		} else {
-		    System.out.println("Server writing bytes 2");
 		    to_client.writeBytes(parser.toJson(empty_query_response()));
 		}
 		break;
