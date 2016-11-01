@@ -25,13 +25,17 @@ public class TestMaster {
 		Socket socket = new Socket("localhost", port);
 		DataOutputStream to_server = new DataOutputStream(socket.getOutputStream());
 		BufferedReader from_server = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-		InetSocketAddress a = new InetSocketAddress("localhost", port);
-		MasterMessage msg = new MasterMessage(Master.REGISTER, Optional.of("path1"), Optional.of("localhost"), Optional.of(1111));
 		Gson parser = new Gson();
+		InetSocketAddress a = new InetSocketAddress("localhost", port);
+		
+		MasterMessage msg = new MasterMessage(Master.REGISTER, Optional.of("path1"), Optional.of("localhost"), Optional.of(1111));
 		System.out.println("writing bytes to server " + msg.addr.get());
-		to_server.writeBytes(parser.toJson(msg, MasterMessage.class) + "\n");
+		to_server.writeBytes(parser.toJson(msg, MasterMessage.class));
+		to_server.writeBytes("\n");
 		System.out.println("Reading bytes from server");
-		msg = parser.fromJson(from_server.readLine(), MasterMessage.class);
+		String s = from_server.readLine();
+		System.out.println(s);
+		msg = parser.fromJson(s, MasterMessage.class);
 		System.out.println("performing assertions");
 		assert(msg.type == Master.ACCEPTED_REGISTER);
 		assert(msg.addr.equals(Optional.empty()));
