@@ -1,13 +1,14 @@
+package Master;
 import java.net.InetSocketAddress;
 import java.util.Hashtable;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class MasterData {
+public class MasterPublisherPaths {
     private Hashtable<String, InetSocketAddress> name_to_server;
     private Lock lock;
 
-    public MasterData() {
+    public MasterPublisherPaths() {
     	this.name_to_server = new Hashtable<>();
     	this.lock = new ReentrantLock();
     }
@@ -20,7 +21,7 @@ public class MasterData {
 
     public void remove_client(String client_name) {
     	this.lock.lock();
-    	if (this.name_to_server.contains(client_name)) {
+    	if (this.name_to_server.containsKey(client_name)) {
     		this.name_to_server.remove(client_name);
     	}
     	this.lock.unlock();
@@ -35,7 +36,7 @@ public class MasterData {
 
     public boolean contains(String client_name) {
 	this.lock.lock();
-	boolean result = this.name_to_server.contains(client_name);
+	boolean result = this.name_to_server.containsKey(client_name);
 	this.lock.unlock();
 	return result;
     }

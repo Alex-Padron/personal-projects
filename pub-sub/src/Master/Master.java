@@ -1,3 +1,4 @@
+package Master;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -5,23 +6,18 @@ import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Hashtable;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.google.gson.Gson;
 
-public class Master implements Runnable {
-    public static final int REGISTER = 0;
-    public static final int QUERY = 1;
-    public static final int NO_PUBLISHER = 2;
-    public static final int PUBLISHER_INFO = 3;
-    public static final int ACCEPTED_REGISTER = 4;
-    public static final int INVALID_REQUEST = 5;
+import Messages.E;
+import Messages.MasterMessage;
 
+public class Master implements Runnable {
     private ServerSocket server_socket;
-    private MasterData data;
+    private MasterPublisherPaths data;
     private Gson parser;
     private ExecutorService executor;
 
@@ -30,7 +26,7 @@ public class Master implements Runnable {
 	this.server_socket = new ServerSocket();
 	this.server_socket.setReuseAddress(true);
 	this.server_socket.bind(new InetSocketAddress(port));
-	this.data = new MasterData();
+	this.data = new MasterPublisherPaths();
 	this.parser = new Gson();
 	this.executor = Executors.newCachedThreadPool();
     }
@@ -65,21 +61,24 @@ public class Master implements Runnable {
 	    MasterMessage client_message =
 		this.parser.fromJson(client_data_raw, MasterMessage.class);
 	    switch (client_message.type) {
-	    case REGISTER:
+	    case E.REGISTER:
 		this.data.add_client(client_message.name.get(),
 				     addr_from_msg(client_message));
 		to_client.writeBytes(parser.toJson(register_response()));
 		break;
-	    case QUERY:
+	    case E.REMOVE:
+		this.data.remove_client(client_message.name.get());
+		to_client.writeBytes(parser.toJson(remove_response()));
+		break;
+	    case E.QUERY:
 		String name = client_message.name.get();
 		if (this.data.contains(name)) {
 		    to_client.writeBytes(
 			      parser.toJson(
 			      filled_query_response(
 			      this.data.get_client(name))));
-		} else {
+		} else
 		    to_client.writeBytes(parser.toJson(empty_query_response()));
-		}
 		break;
 	    }
 	    to_client.writeBytes("\n");
@@ -91,18 +90,23 @@ public class Master implements Runnable {
     }
 
     private MasterMessage register_response() {
-	return new MasterMessage(ACCEPTED_REGISTER, Optional.empty(),
+	return new MasterMessage(E.ACCEPTED_REGISTER, Optional.empty(),
+				 Optional.empty(), Optional.empty());
+    }
+
+    private MasterMessage remove_response() {
+	return new MasterMessage(E.ACCEPTED_REMOVE, Optional.empty(),
 				 Optional.empty(), Optional.empty());
     }
 
     private MasterMessage filled_query_response(InetSocketAddress addr) {
-	return new MasterMessage(PUBLISHER_INFO, Optional.empty(),
+	return new MasterMessage(E.PUBLISHER_INFO, Optional.empty(),
 				 Optional.of(addr.getHostName()),
 				 Optional.of(addr.getPort()));
     }
 
     private MasterMessage empty_query_response() {
-	return new MasterMessage(NO_PUBLISHER, Optional.empty(),
+	return new MasterMessage(E.NO_PUBLISHER, Optional.empty(),
 				 Optional.empty(), Optional.empty());
     }
 }
