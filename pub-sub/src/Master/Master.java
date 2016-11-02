@@ -12,7 +12,7 @@ import java.util.concurrent.Executors;
 
 import com.google.gson.Gson;
 
-import Messages.E;
+import Messages.MessageTypes;
 import Messages.MasterMessage;
 
 public class Master implements Runnable {
@@ -61,16 +61,16 @@ public class Master implements Runnable {
 	    MasterMessage client_message =
 		this.parser.fromJson(client_data_raw, MasterMessage.class);
 	    switch (client_message.type) {
-	    case E.REGISTER:
+	    case REGISTER:
 		this.data.add_client(client_message.name.get(),
 				     addr_from_msg(client_message));
 		to_client.writeBytes(parser.toJson(register_response()));
 		break;
-	    case E.REMOVE:
+	    case REMOVE:
 		this.data.remove_client(client_message.name.get());
 		to_client.writeBytes(parser.toJson(remove_response()));
 		break;
-	    case E.QUERY:
+	    case QUERY:
 		String name = client_message.name.get();
 		if (this.data.contains(name)) {
 		    to_client.writeBytes(
@@ -79,6 +79,8 @@ public class Master implements Runnable {
 			      this.data.get_client(name))));
 		} else
 		    to_client.writeBytes(parser.toJson(empty_query_response()));
+		break;
+	    default:
 		break;
 	    }
 	    to_client.writeBytes("\n");
@@ -90,23 +92,23 @@ public class Master implements Runnable {
     }
 
     private MasterMessage register_response() {
-	return new MasterMessage(E.ACCEPTED_REGISTER, Optional.empty(),
+	return new MasterMessage(MessageTypes.ACCEPTED_REGISTER, Optional.empty(),
 				 Optional.empty(), Optional.empty());
     }
 
     private MasterMessage remove_response() {
-	return new MasterMessage(E.ACCEPTED_REMOVE, Optional.empty(),
+	return new MasterMessage(MessageTypes.ACCEPTED_REMOVE, Optional.empty(),
 				 Optional.empty(), Optional.empty());
     }
 
     private MasterMessage filled_query_response(InetSocketAddress addr) {
-	return new MasterMessage(E.PUBLISHER_INFO, Optional.empty(),
+	return new MasterMessage(MessageTypes.PUBLISHER_INFO, Optional.empty(),
 				 Optional.of(addr.getHostName()),
 				 Optional.of(addr.getPort()));
     }
 
     private MasterMessage empty_query_response() {
-	return new MasterMessage(E.NO_PUBLISHER, Optional.empty(),
+	return new MasterMessage(MessageTypes.NO_PUBLISHER, Optional.empty(),
 				 Optional.empty(), Optional.empty());
     }
 }

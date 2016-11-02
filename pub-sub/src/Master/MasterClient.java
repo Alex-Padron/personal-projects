@@ -10,7 +10,7 @@ import java.util.Optional;
 
 import com.google.gson.Gson;
 
-import Messages.E;
+import Messages.MessageTypes;
 import Messages.MasterMessage;
 
 public class MasterClient {
@@ -28,36 +28,36 @@ public class MasterClient {
     }
 
     public void register_path(String path_name, String hostname, int port) throws IOException {
-	MasterMessage msg = new MasterMessage(E.REGISTER,
+	MasterMessage msg = new MasterMessage(MessageTypes.REGISTER,
 					      Optional.of(path_name),
 					      Optional.of(hostname),
 					      Optional.of(port));
 	this.to_server.writeBytes(parser.toJson(msg, MasterMessage.class) + "\n");
 	String response = from_server.readLine();
 	msg = parser.fromJson(response, MasterMessage.class);
-	assert(msg.type == E.ACCEPTED_REGISTER);
+	assert(msg.type == MessageTypes.ACCEPTED_REGISTER);
     }
 
     public void remove_path(String path_name) throws IOException {
-	MasterMessage msg = new MasterMessage(E.REMOVE,
+	MasterMessage msg = new MasterMessage(MessageTypes.REMOVE,
 					      Optional.of(path_name),
 					      Optional.empty(),
 					      Optional.empty());
 	this.to_server.writeBytes(parser.toJson(msg, MasterMessage.class) + "\n");
 	String response = from_server.readLine();
 	msg = parser.fromJson(response, MasterMessage.class);
-	assert(msg.type == E.ACCEPTED_REMOVE);
+	assert(msg.type == MessageTypes.ACCEPTED_REMOVE);
     }
 
     public Optional<InetSocketAddress> get_path_addr(String path_name) throws IOException {
-	MasterMessage msg = new MasterMessage(E.QUERY,
+	MasterMessage msg = new MasterMessage(MessageTypes.QUERY,
 					      Optional.of(path_name),
 					      Optional.empty(),
 					      Optional.empty());
 	this.to_server.writeBytes(parser.toJson(msg, MasterMessage.class) + "\n");
 	String response = from_server.readLine();
 	msg = parser.fromJson(response, MasterMessage.class);
-	if (msg.type == E.PUBLISHER_INFO) {
+	if (msg.type == MessageTypes.PUBLISHER_INFO) {
 	    InetSocketAddress addr =
 		new InetSocketAddress(msg.addr.get(), msg.port.get());
 	    return Optional.of(addr);

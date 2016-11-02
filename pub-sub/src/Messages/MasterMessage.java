@@ -9,12 +9,12 @@ import java.util.Optional;
  *  [Master]
  */
 public class MasterMessage {
-	public int type;
+	public MessageTypes type;
 	public Optional<String> name;
 	public Optional<String> addr;
 	public Optional<Integer> port;
 
-	public MasterMessage(int type, Optional<String> name,
+	public MasterMessage(MessageTypes type, Optional<String> name,
 			     Optional<String> addr, Optional<Integer> port) {
 		this.type = type;
 		this.name = name;

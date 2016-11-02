@@ -17,7 +17,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import com.google.gson.Gson;
 
 import Master.MasterClient;
-import Messages.E;
+import Messages.MessageTypes;
 import Messages.PublisherMessage;
 
 public class Publisher implements Runnable {
@@ -104,15 +104,17 @@ public class Publisher implements Runnable {
 		to_client.writeBytes(parser.toJson(not_publishing_response()));
 	    else {
 		switch (client_message.type) {
-		case E.QUERY_PATH:
+		case QUERY_PATH:
 		    to_client.writeBytes(parser.toJson(publishing_response()));
 		    break;
-		case E.GET_VALUE:
+		case GET_VALUE:
 		    to_client.writeBytes(parser.toJson(
 					 data_response(
 					 paths.get(
 					 client_message.path.get()))));
 		    break;
+		default:
+			break;
 		}
 	    }
 	    this.lock.unlock();
@@ -121,19 +123,19 @@ public class Publisher implements Runnable {
     }
 
     private PublisherMessage not_publishing_response() {
-	return new PublisherMessage(E.NOT_PUBLISHING,
+	return new PublisherMessage(MessageTypes.NOT_PUBLISHING,
 				    Optional.empty(),
 				    Optional.empty());
     }
 
     private PublisherMessage publishing_response() {
-	return new PublisherMessage(E.PUBLISHING_PATH,
+	return new PublisherMessage(MessageTypes.PUBLISHING_PATH,
 				    Optional.empty(),
 				    Optional.empty());
     }
 
     private PublisherMessage data_response(int data) {
-	return new PublisherMessage(E.VALUE_RESPONSE,
+	return new PublisherMessage(MessageTypes.VALUE_RESPONSE,
 				    Optional.empty(),
 				    Optional.of(data));
     }
