@@ -8,7 +8,7 @@ of as a stream.
 
 ### TODO
 
-implement client/test
+add testing to client
 add better error handling for all servers
 refactor message types to be clearer
 add permissioning on master server

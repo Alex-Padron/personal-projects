@@ -12,6 +12,40 @@ import Messages.MasterRequest;
 import Messages.MasterResponse;
 
 public class TestMaster {
+	private DataOutputStream to_server;
+	private BufferedReader from_server;
+	private Gson parser;
+
+	public void master_req_put(String path_name, String hostname, int port) throws IOException {
+		MasterRequest req = new MasterRequest(path_name, hostname, port);
+		MasterResponse des = new MasterResponse(MasterResponse.T.ACCEPT_UPDATE);
+		master_req(req, des);
+	}
+
+	public void master_req_remove(String path_name) throws IOException {
+		MasterRequest req = new MasterRequest(MasterRequest.T.REMOVE_PUBLISHER, path_name);
+		MasterResponse des = new MasterResponse(MasterResponse.T.ACCEPT_UPDATE);
+		master_req(req, des);
+	}
+
+	public void master_req_get(String path_name, String hostname, int port) throws IOException {
+		MasterRequest req = new MasterRequest(MasterRequest.T.GET_PUBLISHER_OF_PATH, path_name);
+		MasterResponse des = new MasterResponse(hostname, port);
+		master_req(req, des);
+	}
+
+	public void master_req_get_i(String path_name) throws IOException {
+		MasterRequest req = new MasterRequest(MasterRequest.T.GET_PUBLISHER_OF_PATH, path_name);
+		MasterResponse des = new MasterResponse(MasterResponse.T.NO_PUBLISHER_FOR_PATH);
+		master_req(req, des);
+	}
+
+	public void master_req(MasterRequest msg, MasterResponse desired) throws IOException {
+		to_server.writeBytes(parser.toJson(msg, MasterRequest.class) + "\n");
+		String s = from_server.readLine();
+		MasterResponse res = parser.fromJson(s, MasterResponse.class);
+		assert(desired.equals(res));
+	}
 
 	@Test
 	public void test() throws IOException {
@@ -21,82 +55,18 @@ public class TestMaster {
 		Thread t = new Thread(m);
 		t.start();
 		Socket socket = new Socket("localhost", port);
-		DataOutputStream to_server =
-		    new DataOutputStream(socket.getOutputStream());
-		BufferedReader from_server =
-		    new BufferedReader(new InputStreamReader(socket.getInputStream()));
-		Gson parser = new Gson();
-		MasterRequest msg;
-		MasterResponse res;
-		String s;
+		to_server = new DataOutputStream(socket.getOutputStream());
+		from_server = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+		parser = new Gson();
 
-		msg = new MasterRequest("path1", "localhost", 1111);
-		
-		to_server.writeBytes(parser.toJson(msg, MasterRequest.class) + "\n");
-		s = from_server.readLine();
-		res = parser.fromJson(s, MasterResponse.class);
-		assert(res.type == MasterResponse.T.ACCEPT_UPDATE);
-		assert(!res.hostname.isPresent());
-		assert(!res.port.isPresent());
-
-		msg = new MasterRequest(MasterRequest.T.GET_PUBLISHER_OF_PATH, "path1");
-		to_server.writeBytes(parser.toJson(msg, MasterRequest.class) + "\n");
-		s = from_server.readLine();
-		res = parser.fromJson(s, MasterResponse.class);
-		assert(res.type == MasterResponse.T.PUBLISHER_INFO);
-		assert(res.hostname.get().equals("localhost"));
-		assert(res.port.get() == 1111);
-
-		msg = new MasterRequest(MasterRequest.T.GET_PUBLISHER_OF_PATH, "path2");
-		to_server.writeBytes(parser.toJson(msg, MasterRequest.class) + "\n");
-		s = from_server.readLine();
-		res = parser.fromJson(s, MasterResponse.class);
-		assert(res.type == MasterResponse.T.NO_PUBLISHER_FOR_PATH);
-
-		msg = new MasterRequest("path2", "localhost2", 2222);
-
-		to_server.writeBytes(parser.toJson(msg, MasterRequest.class) + "\n");
-		s = from_server.readLine();
-		res = parser.fromJson(s, MasterResponse.class);
-		assert(res.type == MasterResponse.T.ACCEPT_UPDATE);
-		assert(!res.hostname.isPresent());
-		assert(!res.port.isPresent());
-
-		msg = new MasterRequest(MasterRequest.T.GET_PUBLISHER_OF_PATH, "path2");
-		to_server.writeBytes(parser.toJson(msg, MasterRequest.class) + "\n");
-		s = from_server.readLine();
-		res = parser.fromJson(s, MasterResponse.class);
-		assert(res.type == MasterResponse.T.PUBLISHER_INFO);
-		assert(res.hostname.get().equals("localhost2"));
-		assert(res.port.get() == 2222);
-		
-		msg = new MasterRequest("path1", "localhost2", 2222);
-		to_server.writeBytes(parser.toJson(msg, MasterRequest.class) + "\n");
-		s = from_server.readLine();
-		res = parser.fromJson(s, MasterResponse.class);
-		assert(res.type == MasterResponse.T.ACCEPT_UPDATE);
-
-		msg = new MasterRequest(MasterRequest.T.GET_PUBLISHER_OF_PATH, "path1");
-		to_server.writeBytes(parser.toJson(msg, MasterRequest.class) + "\n");
-		s = from_server.readLine();
-		res = parser.fromJson(s, MasterResponse.class);
-		assert(res.type == MasterResponse.T.PUBLISHER_INFO);
-		assert(res.hostname.get().equals("localhost2"));
-		assert(res.port.get() == 2222);
-
-		msg = new MasterRequest(MasterRequest.T.REMOVE_PUBLISHER, "path1");
-		to_server.writeBytes(parser.toJson(msg, MasterRequest.class) + "\n");
-		s = from_server.readLine();
-		res = parser.fromJson(s, MasterResponse.class);
-		assert(res.type == MasterResponse.T.ACCEPT_UPDATE);
-
-		msg = new MasterRequest(MasterRequest.T.GET_PUBLISHER_OF_PATH, "path1");
-		to_server.writeBytes(parser.toJson(msg, MasterRequest.class) + "\n");
-		s = from_server.readLine();
-		res = parser.fromJson(s, MasterResponse.class);
-		assert(res.type == MasterResponse.T.NO_PUBLISHER_FOR_PATH);
-		assert(!res.hostname.isPresent());
-		assert(!res.port.isPresent());
+		master_req_put("path1", "localhost", 1111);
+		master_req_get_i("path2");
+		master_req_put("path2", "localhost2", 2222);
+		master_req_get("path2", "localhost2", 2222);
+		master_req_put("path1", "localhost2", 2222);
+		master_req_get("path1", "localhost2", 2222);
+		master_req_remove("path1");
+		master_req_get_i("path1");
 
 		socket.close();
 		System.out.println("...passed");

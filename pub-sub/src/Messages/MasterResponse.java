@@ -25,4 +25,11 @@ public class MasterResponse {
 		this.port = Optional.of(port);
 	}
 	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) return false;
+		if (!MasterResponse.class.isAssignableFrom(obj.getClass())) return false;
+		MasterResponse other = (MasterResponse) obj;
+		return other.type == this.type && other.hostname.equals(this.hostname) && other.port.equals(this.port);
+	}
 }
