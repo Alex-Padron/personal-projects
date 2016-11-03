@@ -14,4 +14,4 @@ refactor message types to be clearer
 add permissioning on master server
 add authentication for publishers (master signs that the given publisher is
 the correct one)
-refactor test cases
+add close methods for classes
