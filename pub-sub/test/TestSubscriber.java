@@ -18,21 +18,25 @@ public class TestSubscriber {
 		Map<String, Integer> paths = new HashMap<>();
 		paths.put("path1", 1);
 		paths.put("path2", 2);
-		
+
 		Master ms = new Master(master_port);
 		Thread t1 = new Thread(ms);
 		t1.start();
-		
-		Publisher<Integer> p = new Publisher<>(port, master_hostname, master_port, paths);
+
+		Publisher<Integer> p = new Publisher<>(port,
+						       master_hostname,
+						       master_port,
+						       paths);
 		Thread t2 = new Thread(p);
 		t2.start();
 		p.send_paths_to_master();
-		
+
 		System.out.println("Testing Subscriber...");
-		Subscriber<Integer> s = new Subscriber<>(master_hostname, master_port);
+		Subscriber<Integer> s = new Subscriber<>(master_hostname,
+							 master_port);
 		assert(s.subscribe("path1"));
 		assert(!s.subscribe("path3"));
-		
+
 		assert(s.get_value("path2").get() == 2);
 		assert(s.get_value("path1").get() == 1);
 		assert(!s.get_value("path3").isPresent());
