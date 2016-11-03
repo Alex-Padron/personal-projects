@@ -10,7 +10,8 @@ public class PublisherResponse<V> {
     public enum T {
 	VALUE_RESPONSE,
 	NOT_PUBLISHING_PATH,
-	AM_PUBLISHING_PATH
+	AM_PUBLISHING_PATH,
+	INVALID_REQUEST
     }
     public final T type;
     public final Optional<V> value;

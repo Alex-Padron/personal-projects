@@ -18,3 +18,4 @@ add close methods for classes
 add type safety for subscriber
 switch master data store not not duplicate publisher info
 add error handling in subscriber get value if publisher does not have value
+switch message types to be final rather than methods where possible

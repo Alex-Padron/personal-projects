@@ -98,9 +98,11 @@ public class Subscriber<T> {
 	BufferedReader from_server = new BufferedReader(
 				     new InputStreamReader(
 				     socket.getInputStream()));
-	PublisherRequest msg = new PublisherRequest(PublisherRequest.T.GET_PATH_VALUE, path);
+	PublisherRequest msg =
+	    new PublisherRequest(PublisherRequest.T.GET_PATH_VALUE, path);
 	to_server.writeBytes(parser.toJson(msg, PublisherRequest.class) + "\n");
-	PublisherResponse<T> response = parser.fromJson(from_server.readLine(), msg_type);
+	PublisherResponse<T> response =
+	    parser.fromJson(from_server.readLine(), msg_type);
         return response.value;
 	}
 }

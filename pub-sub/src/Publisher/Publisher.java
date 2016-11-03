@@ -3,6 +3,7 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashSet;
@@ -14,6 +15,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import Master.MasterClient;
 import Messages.PublisherRequest;
@@ -32,6 +34,7 @@ public class Publisher<T> implements Runnable {
     private int port;
     private String hostname;
     private Gson parser;
+    private Type response_type;
 
     /**
      * @param port: for the publisher to bind on
@@ -52,6 +55,7 @@ public class Publisher<T> implements Runnable {
 	this.path_data = path_data;
 	this.to_remove = new HashSet<>();
 	this.parser = new Gson();
+	this.response_type = new TypeToken<PublisherResponse<T>>(){}.getType();
     }
 
     /**
@@ -118,30 +122,49 @@ public class Publisher<T> implements Runnable {
 	    String client_data_raw = from_client.readLine();
 	    if (client_data_raw == null) return;
 	    PublisherRequest client_message =
-		this.parser.fromJson(client_data_raw, PublisherRequest.class);
+		request_from_string(client_data_raw);
+	    if (client_message == null || !(validate(client_message))) {
+		write(to_client, invalid_request());
+		continue;
+	    }
 	    this.lock.lock();
 	    if (!path_data.containsKey(client_message.path))
-		to_client.writeBytes(parser.toJson(not_publishing_response()));
+		write(to_client, not_publishing_response());
 	    else {
 		switch (client_message.type) {
 		case QUERY_PUBLISHING_PATH:
-		    to_client.writeBytes(parser.toJson(publishing_response()));
+		    write(to_client, publishing_response());
 		    break;
 		case GET_PATH_VALUE:
-		    to_client.writeBytes(parser.toJson(
-					 data_response(
-					 path_data.get(
-					 client_message.path))));
+		    write(to_client, data_response(path_data.get(client_message.path)));
 		    break;
 		default:
-			break;
+		    break;
 		}
 	    }
 	    this.lock.unlock();
-	    to_client.writeBytes("\n");
 	}
     }
 
+    private synchronized PublisherRequest request_from_string(String s) {
+	try {
+	    return parser.fromJson(s, PublisherRequest.class);
+	} catch (Exception e) {
+	    return null;
+	}
+    }
+
+    private boolean validate(PublisherRequest req) {
+	return req.path.length() > 0;
+    }
+
+    private void write(DataOutputStream to_client, PublisherResponse<T> r) throws IOException {
+	to_client.writeBytes(parser.toJson(r, response_type) + "\n");
+    }
+
+    private PublisherResponse<T> invalid_request() {
+	return new PublisherResponse<T>(PublisherResponse.T.INVALID_REQUEST);
+    }
     private PublisherResponse<T> not_publishing_response() {
 	return new PublisherResponse<T>(PublisherResponse.T.NOT_PUBLISHING_PATH);
     }

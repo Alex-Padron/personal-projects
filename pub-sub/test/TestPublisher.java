@@ -63,6 +63,12 @@ public class TestPublisher {
 	assert(desired.equals(res));
     }
 
+    public void pub_bad_string(String s) throws IOException {
+    	to_server.writeBytes(s);
+    	s = from_server.readLine();
+    	PublisherResponse<Integer> res = parser.fromJson(s, msg_type);
+    	assert(res.type.equals(PublisherResponse.T.INVALID_REQUEST));
+    }
     @Test
     public void test() throws IOException {
 	System.out.println("Testing Publisher...");
@@ -111,19 +117,24 @@ public class TestPublisher {
 
 	MasterClient mc = new MasterClient("localhost", master_port);
 	p.send_paths_to_master();
-	assert(mc.get_path_addr("path1").get().getPort() == 8080);
+	assert(mc.get_path_addr("path1").get().getPort() == port);
 	assert(!mc.get_path_addr("path2").isPresent());
-	assert(mc.get_path_addr("path3").get().getPort() == 8080);
+	assert(mc.get_path_addr("path3").get().getPort() == port);
 
 	p.put_path("path2", 1);
 	p.send_paths_to_master();
 
-	assert(mc.get_path_addr("path2").get().getPort() == 8080);
+	assert(mc.get_path_addr("path2").get().getPort() == port);
 
 	p.remove_path("path3");
 	p.send_paths_to_master();
 
 	assert(!mc.get_path_addr("path3").isPresent());
+	
+	// some malicious strings
+	
+	pub_bad_string("sadadadadad\n");
+	pub_bad_string("{\"type\":\"GET_PATH_VALUE\",\"path\":\"\"}\n");
 	socket.close();
 	System.out.println("...passed");
     }

@@ -68,7 +68,7 @@ public class Master implements Runnable {
 	    String client_data_raw = from_client.readLine();
 	    if (client_data_raw == null) return; // client ended connection
 	    MasterRequest client_message = request_from_string(client_data_raw);
-	    if (client_message == null || (!check_msg_validity(client_message))) {
+	    if (client_message == null || (!validate(client_message))) {
 		write(to_client, invalid_request());
 		continue;
 	    }
@@ -92,7 +92,15 @@ public class Master implements Runnable {
 	}
     }
 
-    private boolean check_msg_validity(MasterRequest msg) {
+    private synchronized MasterRequest request_from_string(String s) {
+	try {
+	    return parser.fromJson(s, MasterRequest.class);
+	} catch (Exception e) {
+	    return null;
+	}
+    }
+
+    private boolean validate(MasterRequest msg) {
 	switch (msg.type) {
 	case REGISTER_PUBLISHER:
 	    return msg.path.length() > 0
@@ -105,14 +113,6 @@ public class Master implements Runnable {
 		&& (!msg.port.isPresent());
 	default:
 	    return false;
-	}
-    }
-
-    private MasterRequest request_from_string(String s) {
-	try {
-	    return parser.fromJson(s, MasterRequest.class);
-	} catch (Exception e) {
-	    return null;
 	}
     }
 
