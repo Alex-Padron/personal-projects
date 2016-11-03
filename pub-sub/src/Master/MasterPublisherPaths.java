@@ -13,13 +13,13 @@ public class MasterPublisherPaths {
     	this.lock = new ReentrantLock();
     }
 
-    public void add_client(String client_name, InetSocketAddress client_addr) {
+    public void add(String client_name, InetSocketAddress client_addr) {
     	this.lock.lock();
     	this.name_to_server.put(client_name, client_addr);
     	this.lock.unlock();
     }
 
-    public void remove_client(String client_name) {
+    public void remove(String client_name) {
     	this.lock.lock();
     	if (this.name_to_server.containsKey(client_name)) {
     		this.name_to_server.remove(client_name);
@@ -27,7 +27,7 @@ public class MasterPublisherPaths {
     	this.lock.unlock();
     }
 
-    public InetSocketAddress get_client(String client_name) {
+    public InetSocketAddress get(String client_name) {
     	this.lock.lock();
     	InetSocketAddress client_addr = this.name_to_server.get(client_name);
     	this.lock.unlock();

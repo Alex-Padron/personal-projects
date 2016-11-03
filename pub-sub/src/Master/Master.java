@@ -44,7 +44,10 @@ public class Master implements Runnable {
 			    }
 			}
 		    });
-	    } catch (IOException e) {}
+	    } catch (IOException e) {
+		System.out.println("MASTER IO ERROR - CLOSING" + e);
+		return;
+	    }
 	}
     }
 
@@ -56,32 +59,58 @@ public class Master implements Runnable {
 	    new DataOutputStream(socket.getOutputStream());
 	while (true) {
 	    String client_data_raw = from_client.readLine();
-	    if (client_data_raw == null) return;
-	    MasterRequest client_message =
-		this.parser.fromJson(client_data_raw, MasterRequest.class);
+	    if (client_data_raw == null) return; // client ended connection
+	    MasterRequest client_message = request_from_string(client_data_raw);
+	    if (client_message == null || (!check_msg_validity(client_message))) {
+		write(to_client, invalid_request());
+		continue;
+	    }
 	    switch (client_message.type) {
 	    case REGISTER_PUBLISHER:
-		this.data.add_client(client_message.path,
-				     addr_from_msg(client_message));
-		to_client.writeBytes(parser.toJson(register_response()));
+		this.data.add(client_message.path, addr_from_msg(client_message));
+		write(to_client, register_response());
 		break;
 	    case REMOVE_PUBLISHER:
-		this.data.remove_client(client_message.path);
-		to_client.writeBytes(parser.toJson(remove_response()));
+		this.data.remove(client_message.path);
+		write(to_client, remove_response());
 		break;
 	    case GET_PUBLISHER_OF_PATH:
 		String path = client_message.path;
 		if (this.data.contains(path)) {
-		    to_client.writeBytes(
-			      parser.toJson(
-			      filled_query_response(
-			      this.data.get_client(path))));
+		    write(to_client,filled_query_response(this.data.get(path)));
 		} else
-		    to_client.writeBytes(parser.toJson(empty_query_response()));
+		    write(to_client, empty_query_response());
 		break;
 	    }
-	    to_client.writeBytes("\n");
 	}
+    }
+
+    private boolean check_msg_validity(MasterRequest msg) {
+	switch (msg.type) {
+	case REGISTER_PUBLISHER:
+	    return msg.path.length() > 0
+		&& msg.hostname.isPresent()
+		&& msg.port.isPresent();
+	case REMOVE_PUBLISHER:
+	case GET_PUBLISHER_OF_PATH:
+	    return msg.path.length() > 0
+		&& (!msg.hostname.isPresent())
+		&& (!msg.port.isPresent());
+	default:
+	    return false;
+	}
+    }
+
+    private MasterRequest request_from_string(String s) {
+	try {
+	    return parser.fromJson(s, MasterRequest.class);
+	} catch (Exception e) {
+	    return null;
+	}
+    }
+
+    private void write(DataOutputStream to_client, MasterResponse r) throws IOException {
+	to_client.writeBytes(parser.toJson(r, MasterResponse.class) + "\n");
     }
 
     private InetSocketAddress addr_from_msg(MasterRequest msg) {
@@ -102,5 +131,9 @@ public class Master implements Runnable {
 
     private MasterResponse empty_query_response() {
 	return new MasterResponse(MasterResponse.T.NO_PUBLISHER_FOR_PATH);
+    }
+
+    private MasterResponse invalid_request() {
+	return new MasterResponse(MasterResponse.T.INVALID_REQUEST);
     }
 }
