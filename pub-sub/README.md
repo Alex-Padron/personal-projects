@@ -15,3 +15,6 @@ add permissioning on master server
 add authentication for publishers (master signs that the given publisher is
 the correct one)
 add close methods for classes
+add type safety for subscriber
+switch master data store not not duplicate publisher info
+add error handling in subscriber get value if publisher does not have value

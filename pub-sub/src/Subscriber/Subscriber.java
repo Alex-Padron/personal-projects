@@ -18,6 +18,10 @@ import Master.MasterClient;
 import Messages.PublisherRequest;
 import Messages.PublisherResponse;
 
+/**
+ * Subscriber for data type T. Should only be used to connect to publishers
+ * that are also publishing type T.
+ */
 public class Subscriber<T> {
     private final MasterClient MC;
     private final Hashtable<String, InetSocketAddress> publishers;
@@ -25,6 +29,9 @@ public class Subscriber<T> {
     private final Gson parser;
     private final Type msg_type;
 
+    /*
+      @param master_hostname, master_port: location of the master
+     */
     public Subscriber(String master_hostname, int master_port) throws UnknownHostException, IOException {
 	this.MC = new MasterClient(master_hostname, master_port);
 	this.publishers = new Hashtable<>();
@@ -33,7 +40,12 @@ public class Subscriber<T> {
 	this.msg_type = new TypeToken<PublisherResponse<Integer>>(){}.getType();
     }
 
-    // Ask the master and cache the publisher for the path
+    /*
+     * Ask the master about the publisher for a given path, and cache the
+     * result if there is a publisher.
+     * @param path_name: of the path to query
+     * @return whether the subscriber found a publisher for the given path
+     */
     public boolean subscribe(String path_name) throws IOException {
 	Optional<InetSocketAddress> addr = MC.get_path_addr(path_name);
 	if (addr.isPresent()) {
@@ -47,8 +59,11 @@ public class Subscriber<T> {
 	}
     }
 
-    // get the value at the path, or empty if there is no
-    // value for this path
+    /**
+     * get the value for the specified path
+     * @param path_name: of the path to query
+     * @return the value or empty if no-one is publishing that value
+     */
     public Optional<T> get_value(String path_name) throws IOException {
 	while (true) {
 	    if (this.publishers.containsKey(path_name)) {
