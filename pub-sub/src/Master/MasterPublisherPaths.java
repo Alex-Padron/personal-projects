@@ -4,6 +4,10 @@ import java.util.Hashtable;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * Multithreading-safe store of the paths/publishers that the master
+ * knows about
+ */
 public class MasterPublisherPaths {
     private Hashtable<String, InetSocketAddress> name_to_server;
     private Lock lock;
@@ -13,30 +17,31 @@ public class MasterPublisherPaths {
     	this.lock = new ReentrantLock();
     }
 
-    public void add(String client_name, InetSocketAddress client_addr) {
+    public void add(String publisher_name, InetSocketAddress publisher_addr) {
     	this.lock.lock();
-    	this.name_to_server.put(client_name, client_addr);
+    	this.name_to_server.put(publisher_name, publisher_addr);
     	this.lock.unlock();
     }
 
-    public void remove(String client_name) {
+    public void remove(String publisher_name) {
     	this.lock.lock();
-    	if (this.name_to_server.containsKey(client_name)) {
-    		this.name_to_server.remove(client_name);
+    	if (this.name_to_server.containsKey(publisher_name)) {
+	    this.name_to_server.remove(publisher_name);
     	}
     	this.lock.unlock();
     }
 
-    public InetSocketAddress get(String client_name) {
+    public InetSocketAddress get(String publisher_name) {
     	this.lock.lock();
-    	InetSocketAddress client_addr = this.name_to_server.get(client_name);
+    	InetSocketAddress publisher_addr =
+	    this.name_to_server.get(publisher_name);
     	this.lock.unlock();
-    	return client_addr;
+    	return publisher_addr;
     }
 
-    public boolean contains(String client_name) {
+    public boolean contains(String publisher_name) {
 	this.lock.lock();
-	boolean result = this.name_to_server.containsKey(client_name);
+	boolean result = this.name_to_server.containsKey(publisher_name);
 	this.lock.unlock();
 	return result;
     }

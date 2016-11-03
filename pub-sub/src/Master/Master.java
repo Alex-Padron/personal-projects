@@ -14,12 +14,19 @@ import com.google.gson.Gson;
 import Messages.MasterRequest;
 import Messages.MasterResponse;
 
+/**
+ * Master server which allows publishers to register for paths,
+ * and clients to query which publisher is publishing a given path
+ */
 public class Master implements Runnable {
     private ServerSocket server_socket;
     private MasterPublisherPaths data;
     private Gson parser;
     private ExecutorService executor;
 
+    /**
+     * @param port: for the master to bind on
+     */
     public Master(int port) throws IOException {
 	System.out.println("MASTER ON PORT:" + port);
 	this.server_socket = new ServerSocket();
