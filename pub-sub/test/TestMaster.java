@@ -40,7 +40,7 @@ public class TestMaster {
 	MasterRequest req =
 	    new MasterRequest(MasterRequest.T.GET_PUBLISHER_OF_PATH, path_name);
 	MasterResponse des =
-	   n ew MasterResponse(MasterResponse.T.NO_PUBLISHER_FOR_PATH);
+	    new MasterResponse(MasterResponse.T.NO_PUBLISHER_FOR_PATH);
 	master_req(req, des);
     }
 
