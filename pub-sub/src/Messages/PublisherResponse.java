@@ -20,4 +20,12 @@ public class PublisherResponse<V> {
 		this.type = T.VALUE_RESPONSE;
 		this.value = Optional.of(value);
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) return false;
+		if (!(obj instanceof PublisherResponse<?>)) return false;
+		PublisherResponse<?> other = (PublisherResponse<?>) obj;
+		return other.type.equals(this.type) && other.value.equals(this.value);
+	}
 }
