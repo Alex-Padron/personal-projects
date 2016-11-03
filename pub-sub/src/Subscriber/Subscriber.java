@@ -15,8 +15,8 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import Master.MasterClient;
-import Messages.MessageTypes;
-import Messages.PublisherMessage;
+import Messages.PublisherRequest;
+import Messages.PublisherResponse;
 
 public class Subscriber<T> {
     private final MasterClient MC;
@@ -30,7 +30,7 @@ public class Subscriber<T> {
 	this.publishers = new Hashtable<>();
 	this.sockets = new Hashtable<>();
 	this.parser = new Gson();
-	this.msg_type = new TypeToken<PublisherMessage<Integer>>(){}.getType();
+	this.msg_type = new TypeToken<PublisherResponse<Integer>>(){}.getType();
     }
 
     // Ask the master and cache the publisher for the path
@@ -66,6 +66,7 @@ public class Subscriber<T> {
 
     // close all active publisher connections
     public void close_connections() {
+    	// TODO
     }
 
     private Optional<T> get_from_publisher(InetSocketAddress addr,
@@ -82,11 +83,9 @@ public class Subscriber<T> {
 	BufferedReader from_server = new BufferedReader(
 				     new InputStreamReader(
 				     socket.getInputStream()));
-	PublisherMessage<T> msg = new PublisherMessage<>(MessageTypes.GET_VALUE,
-						    Optional.of(path),
-						    Optional.empty());
-	to_server.writeBytes(parser.toJson(msg, PublisherMessage.class) + "\n");
-	msg = parser.fromJson(from_server.readLine(), msg_type);
-        return msg.value;
+	PublisherRequest msg = new PublisherRequest(PublisherRequest.T.GET_PATH_VALUE, path);
+	to_server.writeBytes(parser.toJson(msg, PublisherRequest.class) + "\n");
+	PublisherResponse<T> response = parser.fromJson(from_server.readLine(), msg_type);
+        return response.value;
 	}
 }

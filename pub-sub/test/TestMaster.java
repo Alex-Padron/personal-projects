@@ -3,14 +3,13 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.util.Optional;
 import org.junit.Test;
 
 import com.google.gson.Gson;
 
 import Master.Master;
-import Messages.MessageTypes;
-import Messages.MasterMessage;
+import Messages.MasterRequest;
+import Messages.MasterResponse;
 
 public class TestMaster {
 
@@ -27,102 +26,77 @@ public class TestMaster {
 		BufferedReader from_server =
 		    new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		Gson parser = new Gson();
-		MasterMessage msg;
+		MasterRequest msg;
+		MasterResponse res;
 		String s;
 
-		msg = new MasterMessage(MessageTypes.REGISTER,
-					Optional.of("path1"),
-					Optional.of("localhost"),
-					Optional.of(1111));
-		to_server.writeBytes(parser.toJson(msg, MasterMessage.class) + "\n");
+		msg = new MasterRequest("path1", "localhost", 1111);
+		
+		to_server.writeBytes(parser.toJson(msg, MasterRequest.class) + "\n");
 		s = from_server.readLine();
-		msg = parser.fromJson(s, MasterMessage.class);
-		assert(msg.type == MessageTypes.ACCEPTED_REGISTER);
-		assert(msg.addr.equals(Optional.empty()));
-		assert(msg.name.equals(Optional.empty()));
+		res = parser.fromJson(s, MasterResponse.class);
+		assert(res.type == MasterResponse.T.ACCEPT_UPDATE);
+		assert(!res.hostname.isPresent());
+		assert(!res.port.isPresent());
 
-		msg = new MasterMessage(MessageTypes.QUERY,
-					Optional.of("path1"),
-					Optional.empty(),
-					Optional.empty());
-		to_server.writeBytes(parser.toJson(msg, MasterMessage.class) + "\n");
+		msg = new MasterRequest(MasterRequest.T.GET_PUBLISHER_OF_PATH, "path1");
+		to_server.writeBytes(parser.toJson(msg, MasterRequest.class) + "\n");
 		s = from_server.readLine();
-		msg = parser.fromJson(s, MasterMessage.class);
-		assert(msg.type == MessageTypes.PUBLISHER_INFO);
-		assert(msg.addr.get().equals("localhost"));
-		assert(msg.port.get() == 1111);
+		res = parser.fromJson(s, MasterResponse.class);
+		assert(res.type == MasterResponse.T.PUBLISHER_INFO);
+		assert(res.hostname.get().equals("localhost"));
+		assert(res.port.get() == 1111);
 
-		msg = new MasterMessage(MessageTypes.QUERY,
-					Optional.of("path2"),
-					Optional.empty(),
-					Optional.empty());
-		to_server.writeBytes(parser.toJson(msg, MasterMessage.class) + "\n");
+		msg = new MasterRequest(MasterRequest.T.GET_PUBLISHER_OF_PATH, "path2");
+		to_server.writeBytes(parser.toJson(msg, MasterRequest.class) + "\n");
 		s = from_server.readLine();
-		msg = parser.fromJson(s, MasterMessage.class);
-		assert(msg.type == MessageTypes.NO_PUBLISHER);
+		res = parser.fromJson(s, MasterResponse.class);
+		assert(res.type == MasterResponse.T.NO_PUBLISHER_FOR_PATH);
 
-		msg = new MasterMessage(MessageTypes.REGISTER,
-					Optional.of("path2"),
-					Optional.of("localhost2"),
-					Optional.of(2222));
-		to_server.writeBytes(parser.toJson(msg, MasterMessage.class) + "\n");
+		msg = new MasterRequest("path2", "localhost2", 2222);
+
+		to_server.writeBytes(parser.toJson(msg, MasterRequest.class) + "\n");
 		s = from_server.readLine();
-		msg = parser.fromJson(s, MasterMessage.class);
-		assert(msg.type == MessageTypes.ACCEPTED_REGISTER);
-		assert(msg.addr.equals(Optional.empty()));
-		assert(msg.name.equals(Optional.empty()));
+		res = parser.fromJson(s, MasterResponse.class);
+		assert(res.type == MasterResponse.T.ACCEPT_UPDATE);
+		assert(!res.hostname.isPresent());
+		assert(!res.port.isPresent());
 
-		msg = new MasterMessage(MessageTypes.QUERY,
-					Optional.of("path2"),
-					Optional.empty(),
-					Optional.empty());
-		to_server.writeBytes(parser.toJson(msg, MasterMessage.class) + "\n");
+		msg = new MasterRequest(MasterRequest.T.GET_PUBLISHER_OF_PATH, "path2");
+		to_server.writeBytes(parser.toJson(msg, MasterRequest.class) + "\n");
 		s = from_server.readLine();
-		msg = parser.fromJson(s, MasterMessage.class);
-		assert(msg.type == MessageTypes.PUBLISHER_INFO);
-		assert(msg.addr.get().equals("localhost2"));
-		assert(msg.port.get() == 2222);
-
-		msg = new MasterMessage(MessageTypes.REGISTER,
-					Optional.of("path1"),
-					Optional.of("localhost2"),
-					Optional.of(2222));
-		to_server.writeBytes(parser.toJson(msg, MasterMessage.class) + "\n");
+		res = parser.fromJson(s, MasterResponse.class);
+		assert(res.type == MasterResponse.T.PUBLISHER_INFO);
+		assert(res.hostname.get().equals("localhost2"));
+		assert(res.port.get() == 2222);
+		
+		msg = new MasterRequest("path1", "localhost2", 2222);
+		to_server.writeBytes(parser.toJson(msg, MasterRequest.class) + "\n");
 		s = from_server.readLine();
-		msg = parser.fromJson(s, MasterMessage.class);
-		assert(msg.type == MessageTypes.ACCEPTED_REGISTER);
-		assert(msg.addr.equals(Optional.empty()));
-		assert(msg.name.equals(Optional.empty()));
+		res = parser.fromJson(s, MasterResponse.class);
+		assert(res.type == MasterResponse.T.ACCEPT_UPDATE);
 
-		msg = new MasterMessage(MessageTypes.QUERY,
-					Optional.of("path1"),
-					Optional.empty(),
-					Optional.empty());
-		to_server.writeBytes(parser.toJson(msg, MasterMessage.class) + "\n");
+		msg = new MasterRequest(MasterRequest.T.GET_PUBLISHER_OF_PATH, "path1");
+		to_server.writeBytes(parser.toJson(msg, MasterRequest.class) + "\n");
 		s = from_server.readLine();
-		msg = parser.fromJson(s, MasterMessage.class);
-		assert(msg.type == MessageTypes.PUBLISHER_INFO);
-		assert(msg.addr.get().equals("localhost2"));
-		assert(msg.port.get() == 2222);
+		res = parser.fromJson(s, MasterResponse.class);
+		assert(res.type == MasterResponse.T.PUBLISHER_INFO);
+		assert(res.hostname.get().equals("localhost2"));
+		assert(res.port.get() == 2222);
 
-		msg = new MasterMessage(MessageTypes.REMOVE,
-					Optional.of("path1"),
-					Optional.empty(),
-					Optional.empty());
-		to_server.writeBytes(parser.toJson(msg, MasterMessage.class) + "\n");
+		msg = new MasterRequest(MasterRequest.T.REMOVE_PUBLISHER, "path1");
+		to_server.writeBytes(parser.toJson(msg, MasterRequest.class) + "\n");
 		s = from_server.readLine();
-		msg = parser.fromJson(s, MasterMessage.class);
-		assert(msg.type == MessageTypes.ACCEPTED_REMOVE);
+		res = parser.fromJson(s, MasterResponse.class);
+		assert(res.type == MasterResponse.T.ACCEPT_UPDATE);
 
-		msg = new MasterMessage(MessageTypes.QUERY,
-					Optional.of("path1"),
-					Optional.empty(),
-					Optional.empty());
-		to_server.writeBytes(parser.toJson(msg, MasterMessage.class) + "\n");
+		msg = new MasterRequest(MasterRequest.T.GET_PUBLISHER_OF_PATH, "path1");
+		to_server.writeBytes(parser.toJson(msg, MasterRequest.class) + "\n");
 		s = from_server.readLine();
-		msg = parser.fromJson(s, MasterMessage.class);
-
-		assert(msg.type == MessageTypes.NO_PUBLISHER);
+		res = parser.fromJson(s, MasterResponse.class);
+		assert(res.type == MasterResponse.T.NO_PUBLISHER_FOR_PATH);
+		assert(!res.hostname.isPresent());
+		assert(!res.port.isPresent());
 
 		socket.close();
 		System.out.println("...passed");

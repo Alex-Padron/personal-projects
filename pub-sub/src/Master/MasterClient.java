@@ -10,8 +10,8 @@ import java.util.Optional;
 
 import com.google.gson.Gson;
 
-import Messages.MessageTypes;
-import Messages.MasterMessage;
+import Messages.MasterRequest;
+import Messages.MasterResponse;
 
 public class MasterClient {
 	private final Socket socket;
@@ -28,38 +28,29 @@ public class MasterClient {
     }
 
     public void register_path(String path_name, String hostname, int port) throws IOException {
-	MasterMessage msg = new MasterMessage(MessageTypes.REGISTER,
-					      Optional.of(path_name),
-					      Optional.of(hostname),
-					      Optional.of(port));
-	this.to_server.writeBytes(parser.toJson(msg, MasterMessage.class) + "\n");
-	String response = from_server.readLine();
-	msg = parser.fromJson(response, MasterMessage.class);
-	assert(msg.type == MessageTypes.ACCEPTED_REGISTER);
+	MasterRequest request = new MasterRequest(path_name, hostname, port);
+	this.to_server.writeBytes(parser.toJson(request, MasterRequest.class) + "\n");
+	String raw_response = from_server.readLine();
+	MasterResponse response = parser.fromJson(raw_response, MasterResponse.class);
+	assert(response.type == MasterResponse.T.ACCEPT_UPDATE);
     }
 
     public void remove_path(String path_name) throws IOException {
-	MasterMessage msg = new MasterMessage(MessageTypes.REMOVE,
-					      Optional.of(path_name),
-					      Optional.empty(),
-					      Optional.empty());
-	this.to_server.writeBytes(parser.toJson(msg, MasterMessage.class) + "\n");
-	String response = from_server.readLine();
-	msg = parser.fromJson(response, MasterMessage.class);
-	assert(msg.type == MessageTypes.ACCEPTED_REMOVE);
+	MasterRequest request = new MasterRequest(MasterRequest.T.REMOVE_PUBLISHER, path_name);
+	this.to_server.writeBytes(parser.toJson(request, MasterRequest.class) + "\n");
+	String raw_response = from_server.readLine();
+	MasterResponse response = parser.fromJson(raw_response, MasterResponse.class);
+	assert(response.type == MasterResponse.T.ACCEPT_UPDATE);
     }
 
     public Optional<InetSocketAddress> get_path_addr(String path_name) throws IOException {
-	MasterMessage msg = new MasterMessage(MessageTypes.QUERY,
-					      Optional.of(path_name),
-					      Optional.empty(),
-					      Optional.empty());
-	this.to_server.writeBytes(parser.toJson(msg, MasterMessage.class) + "\n");
-	String response = from_server.readLine();
-	msg = parser.fromJson(response, MasterMessage.class);
-	if (msg.type == MessageTypes.PUBLISHER_INFO) {
+	MasterRequest request = new MasterRequest(MasterRequest.T.GET_PUBLISHER_OF_PATH, path_name);
+	this.to_server.writeBytes(parser.toJson(request, MasterRequest.class) + "\n");
+	String raw_response = from_server.readLine();
+	MasterResponse response = parser.fromJson(raw_response, MasterResponse.class);
+	if (response.type == MasterResponse.T.PUBLISHER_INFO) {
 	    InetSocketAddress addr =
-		new InetSocketAddress(msg.addr.get(), msg.port.get());
+		new InetSocketAddress(response.hostname.get(), response.port.get());
 	    return Optional.of(addr);
 	}
 	return Optional.empty();

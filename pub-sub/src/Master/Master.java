@@ -6,14 +6,13 @@ import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.google.gson.Gson;
 
-import Messages.MessageTypes;
-import Messages.MasterMessage;
+import Messages.MasterRequest;
+import Messages.MasterResponse;
 
 public class Master implements Runnable {
     private ServerSocket server_socket;
@@ -50,7 +49,7 @@ public class Master implements Runnable {
     }
 
     private void handle_client_connection(Socket socket) throws IOException{
-	System.out.println("NEW CLIENT: " + socket);
+	System.out.println("NEW MASTER CLIENT: " + socket);
 	BufferedReader from_client =
 	    new BufferedReader(new InputStreamReader(socket.getInputStream()));
 	DataOutputStream to_client =
@@ -58,57 +57,50 @@ public class Master implements Runnable {
 	while (true) {
 	    String client_data_raw = from_client.readLine();
 	    if (client_data_raw == null) return;
-	    MasterMessage client_message =
-		this.parser.fromJson(client_data_raw, MasterMessage.class);
+	    MasterRequest client_message =
+		this.parser.fromJson(client_data_raw, MasterRequest.class);
 	    switch (client_message.type) {
-	    case REGISTER:
-		this.data.add_client(client_message.name.get(),
+	    case REGISTER_PUBLISHER:
+		this.data.add_client(client_message.path,
 				     addr_from_msg(client_message));
 		to_client.writeBytes(parser.toJson(register_response()));
 		break;
-	    case REMOVE:
-		this.data.remove_client(client_message.name.get());
+	    case REMOVE_PUBLISHER:
+		this.data.remove_client(client_message.path);
 		to_client.writeBytes(parser.toJson(remove_response()));
 		break;
-	    case QUERY:
-		String name = client_message.name.get();
-		if (this.data.contains(name)) {
+	    case GET_PUBLISHER_OF_PATH:
+		String path = client_message.path;
+		if (this.data.contains(path)) {
 		    to_client.writeBytes(
 			      parser.toJson(
 			      filled_query_response(
-			      this.data.get_client(name))));
+			      this.data.get_client(path))));
 		} else
 		    to_client.writeBytes(parser.toJson(empty_query_response()));
-		break;
-	    default:
 		break;
 	    }
 	    to_client.writeBytes("\n");
 	}
     }
 
-    private InetSocketAddress addr_from_msg(MasterMessage msg) {
-	return new InetSocketAddress(msg.addr.get(), msg.port.get());
+    private InetSocketAddress addr_from_msg(MasterRequest msg) {
+	return new InetSocketAddress(msg.hostname.get(), msg.port.get());
     }
 
-    private MasterMessage register_response() {
-	return new MasterMessage(MessageTypes.ACCEPTED_REGISTER, Optional.empty(),
-				 Optional.empty(), Optional.empty());
+    private MasterResponse register_response() {
+	return new MasterResponse(MasterResponse.T.ACCEPT_UPDATE);
     }
 
-    private MasterMessage remove_response() {
-	return new MasterMessage(MessageTypes.ACCEPTED_REMOVE, Optional.empty(),
-				 Optional.empty(), Optional.empty());
+    private MasterResponse remove_response() {
+	return new MasterResponse(MasterResponse.T.ACCEPT_UPDATE);
     }
 
-    private MasterMessage filled_query_response(InetSocketAddress addr) {
-	return new MasterMessage(MessageTypes.PUBLISHER_INFO, Optional.empty(),
-				 Optional.of(addr.getHostName()),
-				 Optional.of(addr.getPort()));
+    private MasterResponse filled_query_response(InetSocketAddress addr) {
+	return new MasterResponse(addr.getHostName(), addr.getPort());
     }
 
-    private MasterMessage empty_query_response() {
-	return new MasterMessage(MessageTypes.NO_PUBLISHER, Optional.empty(),
-				 Optional.empty(), Optional.empty());
+    private MasterResponse empty_query_response() {
+	return new MasterResponse(MasterResponse.T.NO_PUBLISHER_FOR_PATH);
     }
 }

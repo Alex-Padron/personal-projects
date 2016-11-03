@@ -3,12 +3,10 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Type;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -16,11 +14,10 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import Master.MasterClient;
-import Messages.MessageTypes;
-import Messages.PublisherMessage;
+import Messages.PublisherRequest;
+import Messages.PublisherResponse;
 
 public class Publisher<T> implements Runnable {
     private ExecutorService executor;
@@ -32,7 +29,6 @@ public class Publisher<T> implements Runnable {
     private int port;
     private String hostname;
     private Gson parser;
-    private Type msg_type;
 
     public Publisher(int port, String master_hostname, int master_port,
 		     Map<String, T> path_data) throws IOException
@@ -47,7 +43,6 @@ public class Publisher<T> implements Runnable {
 	this.path_data = path_data;
 	this.to_remove = new HashSet<>();
 	this.parser = new Gson();
-	this.msg_type = new TypeToken<PublisherMessage<Integer>>(){}.getType();
     }
 
     public void put_path(String path_name, T value) {
@@ -101,21 +96,21 @@ public class Publisher<T> implements Runnable {
 	while (true) {
 	    String client_data_raw = from_client.readLine();
 	    if (client_data_raw == null) return;
-	    PublisherMessage<T> client_message =
-		this.parser.fromJson(client_data_raw, msg_type);
+	    PublisherRequest client_message =
+		this.parser.fromJson(client_data_raw, PublisherRequest.class);
 	    this.lock.lock();
-	    if (!path_data.containsKey(client_message.path.get()))
+	    if (!path_data.containsKey(client_message.path))
 		to_client.writeBytes(parser.toJson(not_publishing_response()));
 	    else {
 		switch (client_message.type) {
-		case QUERY_PATH:
+		case QUERY_PUBLISHING_PATH:
 		    to_client.writeBytes(parser.toJson(publishing_response()));
 		    break;
-		case GET_VALUE:
+		case GET_PATH_VALUE:
 		    to_client.writeBytes(parser.toJson(
 					 data_response(
 					 path_data.get(
-					 client_message.path.get()))));
+					 client_message.path))));
 		    break;
 		default:
 			break;
@@ -126,21 +121,15 @@ public class Publisher<T> implements Runnable {
 	}
     }
 
-    private PublisherMessage<T> not_publishing_response() {
-	return new PublisherMessage<T>(MessageTypes.NOT_PUBLISHING,
-				    Optional.empty(),
-				    Optional.empty());
+    private PublisherResponse<T> not_publishing_response() {
+	return new PublisherResponse<T>(PublisherResponse.T.NOT_PUBLISHING_PATH);
     }
 
-    private PublisherMessage<T> publishing_response() {
-	return new PublisherMessage<T>(MessageTypes.PUBLISHING_PATH,
-				    Optional.empty(),
-				    Optional.empty());
+    private PublisherResponse<T> publishing_response() {
+	return new PublisherResponse<T>(PublisherResponse.T.AM_PUBLISHING_PATH);
     }
 
-    private PublisherMessage<T> data_response(T data) {
-	return new PublisherMessage<T>(MessageTypes.VALUE_RESPONSE,
-				    Optional.empty(),
-				    Optional.of(data));
+    private PublisherResponse<T> data_response(T data) {
+	return new PublisherResponse<T>(data);
     }
 }
