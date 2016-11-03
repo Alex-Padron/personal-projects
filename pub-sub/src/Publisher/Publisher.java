@@ -3,6 +3,7 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashSet;
@@ -15,24 +16,26 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import Master.MasterClient;
 import Messages.MessageTypes;
 import Messages.PublisherMessage;
 
-public class Publisher implements Runnable {
+public class Publisher<T> implements Runnable {
     private ExecutorService executor;
     private Lock lock;
     private ServerSocket server_socket;
     private MasterClient m_client;
-    private Map<String, Integer> paths;
+    private Map<String, T> path_data;
     private Set<String> to_remove;
     private int port;
     private String hostname;
     private Gson parser;
+    private Type msg_type;
 
     public Publisher(int port, String master_hostname, int master_port,
-		     Map<String, Integer> paths) throws IOException
+		     Map<String, T> path_data) throws IOException
     {
 	this.port = port;
 	this.hostname = "localhost";
@@ -41,20 +44,21 @@ public class Publisher implements Runnable {
 	this.server_socket = new ServerSocket(port);
 	this.server_socket.setReuseAddress(true);
 	this.m_client = new MasterClient(master_hostname, master_port);
-	this.paths = paths;
+	this.path_data = path_data;
 	this.to_remove = new HashSet<>();
 	this.parser = new Gson();
+	this.msg_type = new TypeToken<PublisherMessage<Integer>>(){}.getType();
     }
 
-    public void put_path(String path_name, int value) {
+    public void put_path(String path_name, T value) {
 	this.lock.lock();
-	this.paths.put(path_name, value);
+	this.path_data.put(path_name, value);
 	this.lock.unlock();
     }
 
     public void remove_path(String path_name) {
 	this.lock.lock();
-	this.paths.remove(path_name);
+	this.path_data.remove(path_name);
 	this.to_remove.add(path_name);
 	this.lock.unlock();
     }
@@ -64,7 +68,7 @@ public class Publisher implements Runnable {
 	for (String path_name : this.to_remove) {
 	    this.m_client.remove_path(path_name);
 	}
-	for (String path_name : this.paths.keySet()) {
+	for (String path_name : this.path_data.keySet()) {
 	    this.m_client.register_path(path_name,
 					this.hostname,
 					this.port);
@@ -97,10 +101,10 @@ public class Publisher implements Runnable {
 	while (true) {
 	    String client_data_raw = from_client.readLine();
 	    if (client_data_raw == null) return;
-	    PublisherMessage client_message =
-		this.parser.fromJson(client_data_raw, PublisherMessage.class);
+	    PublisherMessage<T> client_message =
+		this.parser.fromJson(client_data_raw, msg_type);
 	    this.lock.lock();
-	    if (!paths.containsKey(client_message.path.get()))
+	    if (!path_data.containsKey(client_message.path.get()))
 		to_client.writeBytes(parser.toJson(not_publishing_response()));
 	    else {
 		switch (client_message.type) {
@@ -110,7 +114,7 @@ public class Publisher implements Runnable {
 		case GET_VALUE:
 		    to_client.writeBytes(parser.toJson(
 					 data_response(
-					 paths.get(
+					 path_data.get(
 					 client_message.path.get()))));
 		    break;
 		default:
@@ -122,20 +126,20 @@ public class Publisher implements Runnable {
 	}
     }
 
-    private PublisherMessage not_publishing_response() {
-	return new PublisherMessage(MessageTypes.NOT_PUBLISHING,
+    private PublisherMessage<T> not_publishing_response() {
+	return new PublisherMessage<T>(MessageTypes.NOT_PUBLISHING,
 				    Optional.empty(),
 				    Optional.empty());
     }
 
-    private PublisherMessage publishing_response() {
-	return new PublisherMessage(MessageTypes.PUBLISHING_PATH,
+    private PublisherMessage<T> publishing_response() {
+	return new PublisherMessage<T>(MessageTypes.PUBLISHING_PATH,
 				    Optional.empty(),
 				    Optional.empty());
     }
 
-    private PublisherMessage data_response(int data) {
-	return new PublisherMessage(MessageTypes.VALUE_RESPONSE,
+    private PublisherMessage<T> data_response(T data) {
+	return new PublisherMessage<T>(MessageTypes.VALUE_RESPONSE,
 				    Optional.empty(),
 				    Optional.of(data));
     }

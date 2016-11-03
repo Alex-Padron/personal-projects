@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Hashtable;
@@ -11,22 +12,25 @@ import java.util.Optional;
 import java.net.InetSocketAddress;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import Master.MasterClient;
 import Messages.MessageTypes;
 import Messages.PublisherMessage;
 
-public class Subscriber {
+public class Subscriber<T> {
     private final MasterClient MC;
     private final Hashtable<String, InetSocketAddress> publishers;
     private final Hashtable<InetSocketAddress, Socket> sockets;
     private final Gson parser;
+    private final Type msg_type;
 
     public Subscriber(String master_hostname, int master_port) throws UnknownHostException, IOException {
 	this.MC = new MasterClient(master_hostname, master_port);
 	this.publishers = new Hashtable<>();
 	this.sockets = new Hashtable<>();
 	this.parser = new Gson();
+	this.msg_type = new TypeToken<PublisherMessage<Integer>>(){}.getType();
     }
 
     // Ask the master and cache the publisher for the path
@@ -45,11 +49,11 @@ public class Subscriber {
 
     // get the value at the path, or empty if there is no
     // value for this path
-    public Optional<Integer> get_value(String path_name) throws IOException {
+    public Optional<T> get_value(String path_name) throws IOException {
 	while (true) {
 	    if (this.publishers.containsKey(path_name)) {
 		InetSocketAddress publisher_addr = publishers.get(path_name);
-		Optional<Integer> result = get_from_publisher(publisher_addr,
+		Optional<T> result = get_from_publisher(publisher_addr,
 							      path_name);
 		if (result.isPresent())
 		    return result;
@@ -64,7 +68,7 @@ public class Subscriber {
     public void close_connections() {
     }
 
-    private Optional<Integer> get_from_publisher(InetSocketAddress addr,
+    private Optional<T> get_from_publisher(InetSocketAddress addr,
 						 String path) throws UnknownHostException, IOException
     {
 	Socket socket;
@@ -78,11 +82,11 @@ public class Subscriber {
 	BufferedReader from_server = new BufferedReader(
 				     new InputStreamReader(
 				     socket.getInputStream()));
-	PublisherMessage msg = new PublisherMessage(MessageTypes.GET_VALUE,
+	PublisherMessage<T> msg = new PublisherMessage<>(MessageTypes.GET_VALUE,
 						    Optional.of(path),
 						    Optional.empty());
 	to_server.writeBytes(parser.toJson(msg, PublisherMessage.class) + "\n");
-	msg = parser.fromJson(from_server.readLine(), PublisherMessage.class);
+	msg = parser.fromJson(from_server.readLine(), msg_type);
         return msg.value;
 	}
 }

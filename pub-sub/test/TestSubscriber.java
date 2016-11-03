@@ -23,13 +23,13 @@ public class TestSubscriber {
 		Thread t1 = new Thread(ms);
 		t1.start();
 		
-		Publisher p = new Publisher(port, master_hostname, master_port, paths);
+		Publisher<Integer> p = new Publisher<>(port, master_hostname, master_port, paths);
 		Thread t2 = new Thread(p);
 		t2.start();
 		p.send_paths_to_master();
 		
 		System.out.println("Testing Subscriber...");
-		Subscriber s = new Subscriber(master_hostname, master_port);
+		Subscriber<Integer> s = new Subscriber<>(master_hostname, master_port);
 		assert(s.subscribe("path1"));
 		assert(!s.subscribe("path3"));
 		

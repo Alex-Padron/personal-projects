@@ -2,13 +2,13 @@ package Messages;
 
 import java.util.Optional;
 
-public class PublisherMessage {
+public class PublisherMessage<T> {
     public MessageTypes type;
     public Optional<String> path;
-    public Optional<Integer> value;
+    public Optional<T> value;
 
     public PublisherMessage(MessageTypes type, Optional<String> path,
-			    Optional<Integer> value) {
+			    Optional<T> value) {
 	this.type      = type;
 	this.path = path;
 	this.value     = value;

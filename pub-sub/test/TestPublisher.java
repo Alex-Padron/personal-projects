@@ -1,23 +1,23 @@
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import Master.Master;
 import Master.MasterClient;
 import Messages.MessageTypes;
 import Messages.PublisherMessage;
 import Publisher.Publisher;
+import java.lang.reflect.Type;
 
 public class TestPublisher {
 
@@ -25,7 +25,8 @@ public class TestPublisher {
 	public void test() throws IOException {
 		System.out.println("Testing Publisher...");
 		Gson parser = new Gson();
-		PublisherMessage m;
+		Type msg_type = new TypeToken<PublisherMessage<Integer>>(){}.getType();
+		PublisherMessage<Integer> m;
 		String s;
 		
 		int port = 8080;
@@ -39,7 +40,7 @@ public class TestPublisher {
 		Thread t1 = new Thread(ms);
 		t1.start();
 		
-		Publisher p = new Publisher(port, master_hostname, master_port, paths);
+		Publisher<Integer> p = new Publisher<>(port, master_hostname, master_port, paths);
 		System.out.println("Without Master...");
 		Thread t2 = new Thread(p);
 		t2.start();
@@ -49,53 +50,53 @@ public class TestPublisher {
 		DataOutputStream to_server = new DataOutputStream(socket.getOutputStream());
 		BufferedReader from_server = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		
-		m = new PublisherMessage(MessageTypes.GET_VALUE, Optional.of("path1"), Optional.empty());
+		m = new PublisherMessage<Integer>(MessageTypes.GET_VALUE, Optional.of("path1"), Optional.empty());
 		to_server.writeBytes(parser.toJson(m, PublisherMessage.class) + "\n");
 		s = from_server.readLine();
-		m = parser.fromJson(s, PublisherMessage.class);
+		m = parser.fromJson(s, msg_type);
 		assert(m.type == MessageTypes.VALUE_RESPONSE);
 		assert(m.value.get() == 1);
 		
 		p.put_path("path3", 3);
 		
-		m = new PublisherMessage(MessageTypes.GET_VALUE, Optional.of("path3"), Optional.empty());
+		m = new PublisherMessage<>(MessageTypes.GET_VALUE, Optional.of("path3"), Optional.empty());
 		to_server.writeBytes(parser.toJson(m, PublisherMessage.class) + "\n");
 		s = from_server.readLine();
-		m = parser.fromJson(s, PublisherMessage.class);
+		m = parser.fromJson(s, msg_type);
 		assert(m.type == MessageTypes.VALUE_RESPONSE);
 		assert(m.value.get() == 3);
 		
-		m = new PublisherMessage(MessageTypes.GET_VALUE, Optional.of("path4"), Optional.empty());
+		m = new PublisherMessage<>(MessageTypes.GET_VALUE, Optional.of("path4"), Optional.empty());
 		to_server.writeBytes(parser.toJson(m, PublisherMessage.class) + "\n");
 		s = from_server.readLine();
-		m = parser.fromJson(s, PublisherMessage.class);
+		m = parser.fromJson(s, msg_type);
 		assert(m.type == MessageTypes.NOT_PUBLISHING);
 
-		m = new PublisherMessage(MessageTypes.GET_VALUE, Optional.of("path2"), Optional.empty());
+		m = new PublisherMessage<>(MessageTypes.GET_VALUE, Optional.of("path2"), Optional.empty());
 		to_server.writeBytes(parser.toJson(m, PublisherMessage.class) + "\n");
 		s = from_server.readLine();
-		m = parser.fromJson(s, PublisherMessage.class);
+		m = parser.fromJson(s, msg_type);
 		assert(m.type == MessageTypes.VALUE_RESPONSE);
 		assert(m.value.get() == 2);
 		
 		p.remove_path("path2");
 		
-		m = new PublisherMessage(MessageTypes.GET_VALUE, Optional.of("path2"), Optional.empty());
+		m = new PublisherMessage<>(MessageTypes.GET_VALUE, Optional.of("path2"), Optional.empty());
 		to_server.writeBytes(parser.toJson(m, PublisherMessage.class) + "\n");
 		s = from_server.readLine();
-		m = parser.fromJson(s, PublisherMessage.class);
+		m = parser.fromJson(s, msg_type);
 		assert(m.type == MessageTypes.NOT_PUBLISHING);
 		
-		m = new PublisherMessage(MessageTypes.QUERY_PATH, Optional.of("path1"), Optional.empty());
+		m = new PublisherMessage<>(MessageTypes.QUERY_PATH, Optional.of("path1"), Optional.empty());
 		to_server.writeBytes(parser.toJson(m, PublisherMessage.class) + "\n");
 		s = from_server.readLine();
-		m = parser.fromJson(s, PublisherMessage.class);
+		m = parser.fromJson(s, msg_type);
 		assert(m.type == MessageTypes.PUBLISHING_PATH);
 		
-		m = new PublisherMessage(MessageTypes.QUERY_PATH, Optional.of("path2"), Optional.empty());
+		m = new PublisherMessage<>(MessageTypes.QUERY_PATH, Optional.of("path2"), Optional.empty());
 		to_server.writeBytes(parser.toJson(m, PublisherMessage.class) + "\n");
 		s = from_server.readLine();
-		m = parser.fromJson(s, PublisherMessage.class);
+		m = parser.fromJson(s, msg_type);
 		assert(m.type == MessageTypes.NOT_PUBLISHING);
 		
 		System.out.println("With Master...");
@@ -115,7 +116,7 @@ public class TestPublisher {
 		p.send_paths_to_master();
 
 		assert(!mc.get_path_addr("path3").isPresent());
-		
+		socket.close();
 		System.out.println("...passed");
 	}
 
