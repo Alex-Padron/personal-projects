@@ -19,6 +19,9 @@ import Master.MasterClient;
 import Messages.PublisherRequest;
 import Messages.PublisherResponse;
 
+/**
+ * Publisher of type T
+ */
 public class Publisher<T> implements Runnable {
     private ExecutorService executor;
     private Lock lock;
@@ -30,6 +33,12 @@ public class Publisher<T> implements Runnable {
     private String hostname;
     private Gson parser;
 
+    /**
+     * @param port: for the publisher to bind on
+     * @param master_hostname, master_port: location of the master
+     * @param path_data: initial set of paths/values that the publisher
+     * is publishing
+     */
     public Publisher(int port, String master_hostname, int master_port,
 		     Map<String, T> path_data) throws IOException
     {
@@ -45,12 +54,19 @@ public class Publisher<T> implements Runnable {
 	this.parser = new Gson();
     }
 
+    /**
+     * @param path_name: name of the path this is publishing
+     * @param value: new value for that path
+     */
     public void put_path(String path_name, T value) {
 	this.lock.lock();
 	this.path_data.put(path_name, value);
 	this.lock.unlock();
     }
 
+    /**
+     * @param path_name: of the path to remove
+     */
     public void remove_path(String path_name) {
 	this.lock.lock();
 	this.path_data.remove(path_name);
@@ -58,6 +74,11 @@ public class Publisher<T> implements Runnable {
 	this.lock.unlock();
     }
 
+    /**
+     * Update the master with all of the paths that the publisher
+     * is currently publishing, and removes all paths the publisher
+     * is no longer publishing
+     */
     public void send_paths_to_master() throws IOException {
 	this.lock.lock();
 	for (String path_name : this.to_remove) {
