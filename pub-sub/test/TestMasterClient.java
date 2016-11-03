@@ -10,7 +10,7 @@ public class TestMasterClient {
     @Test
     public void test() throws IOException {
 	System.out.println("Testing Master Client...");
-	int port = 8080;
+	int port = 8090;
 	Master m = new Master(port);
 	Thread t = new Thread(m);
 	t.start();

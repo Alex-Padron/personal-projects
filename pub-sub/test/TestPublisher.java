@@ -66,9 +66,9 @@ public class TestPublisher {
     @Test
     public void test() throws IOException {
 	System.out.println("Testing Publisher...");
-	int port = 8080;
+	int port = 8100;
 	String master_hostname = "localhost";
-	int master_port = 8081;
+	int master_port = 8101;
 	parser = new Gson();
 	msg_type = new TypeToken<PublisherResponse<Integer>>(){}.getType();
 

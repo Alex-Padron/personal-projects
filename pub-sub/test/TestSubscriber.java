@@ -12,9 +12,9 @@ public class TestSubscriber {
 
     @Test
     public void test() throws IOException {
-	int port = 8080;
+	int port = 8200;
 	String master_hostname = "localhost";
-	int master_port = 8081;
+	int master_port = 8201;
 	Map<String, Integer> paths = new HashMap<>();
 	paths.put("path1", 1);
 	paths.put("path2", 2);
