@@ -2,6 +2,10 @@ package Master.Paths;
 
 import java.net.InetSocketAddress;
 
+/*
+ * Data for a publisher in the master. Includes the address and a refcount
+ * to know when to remove the publisher if it is no longer needed
+ */
 public class PublisherNode {
     public int refcount;
     public final InetSocketAddress addr;

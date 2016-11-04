@@ -15,6 +15,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import Master.MasterClient;
+import Master.Paths.Path;
 import Messages.PublisherRequest;
 import Messages.PublisherResponse;
 
@@ -24,7 +25,7 @@ import Messages.PublisherResponse;
  */
 public class Subscriber<T> {
     private final MasterClient MC;
-    private final Hashtable<String, InetSocketAddress> publishers;
+    private final Hashtable<Path, InetSocketAddress> publishers;
     private final Hashtable<InetSocketAddress, Socket> sockets;
     private final Gson parser;
     private final Type msg_type;
@@ -43,17 +44,17 @@ public class Subscriber<T> {
     /*
      * Ask the master about the publisher for a given path, and cache the
      * result if there is a publisher.
-     * @param path_name: of the path to query
+     * @param path: to query
      * @return whether the subscriber found a publisher for the given path
      */
-    public boolean subscribe(String path_name) throws IOException {
-	Optional<InetSocketAddress> addr = MC.get_path_addr(path_name);
+    public boolean subscribe(Path path) throws IOException {
+	Optional<InetSocketAddress> addr = MC.get_path_addr(path);
 	if (addr.isPresent()) {
-	    publishers.put(path_name, addr.get());
+	    publishers.put(path, addr.get());
 	    return true;
 	} else {
-	    if (publishers.containsKey(path_name)) {
-		publishers.remove(path_name);
+	    if (publishers.containsKey(path)) {
+		publishers.remove(path);
 	    }
 	    return false;
 	}
@@ -61,21 +62,21 @@ public class Subscriber<T> {
 
     /**
      * get the value for the specified path
-     * @param path_name: of the path to query
+     * @param path: to query
      * @return the value or empty if no-one is publishing that value
      */
-    public Optional<T> get_value(String path_name) throws IOException {
+    public Optional<T> get_value(Path path) throws IOException {
 	while (true) {
-	    if (this.publishers.containsKey(path_name)) {
-		InetSocketAddress publisher_addr = publishers.get(path_name);
+	    if (this.publishers.containsKey(path)) {
+		InetSocketAddress publisher_addr = publishers.get(path);
 		Optional<T> result = get_from_publisher(publisher_addr,
-							      path_name);
+							      path);
 		if (result.isPresent())
 		    return result;
 	    }
 	    // if we don't know the publisher or the publisher does not
 	    // have the data, resubscribe to the path from the master
-	    if (!this.subscribe(path_name)) return Optional.empty();
+	    if (!this.subscribe(path)) return Optional.empty();
 	}
     }
 
@@ -85,7 +86,7 @@ public class Subscriber<T> {
     }
 
     private Optional<T> get_from_publisher(InetSocketAddress addr,
-						 String path) throws UnknownHostException, IOException
+						 Path path) throws UnknownHostException, IOException
     {
 	Socket socket;
 	if (sockets.containsKey(addr)) socket = sockets.get(addr);

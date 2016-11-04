@@ -8,6 +8,7 @@ import org.junit.Test;
 import com.google.gson.Gson;
 
 import Master.Master;
+import Master.Paths.Path;
 import Messages.MasterRequest;
 import Messages.MasterResponse;
 
@@ -16,29 +17,33 @@ public class TestMaster {
     private BufferedReader from_server;
     private Gson parser;
 
-    public void master_req_put(String path_name, String hostname, int port) throws IOException {
-	MasterRequest req = new MasterRequest(path_name, hostname, port);
+    public void master_req_put(String path_name, String hostname, int port) throws Exception {
+    Path p = new Path(path_name);
+	MasterRequest req = new MasterRequest(p, hostname, port);
 	MasterResponse des = new MasterResponse(MasterResponse.T.ACCEPT_UPDATE);
 	master_req(req, des);
     }
 
-    public void master_req_remove(String path_name) throws IOException {
+    public void master_req_remove(String path_name) throws Exception {
+    Path p = new Path(path_name);
 	MasterRequest req =
-	    new MasterRequest(MasterRequest.T.REMOVE_PUBLISHER, path_name);
+	    new MasterRequest(MasterRequest.T.REMOVE_PUBLISHER, p);
 	MasterResponse des = new MasterResponse(MasterResponse.T.ACCEPT_UPDATE);
 	master_req(req, des);
     }
 
-    public void master_req_get(String path_name, String hostname, int port) throws IOException {
+    public void master_req_get(String path_name, String hostname, int port) throws Exception {
+    Path p = new Path(path_name);
 	MasterRequest req =
-	    new MasterRequest(MasterRequest.T.GET_PUBLISHER_OF_PATH, path_name);
+	    new MasterRequest(MasterRequest.T.GET_PUBLISHER_OF_PATH, p);
 	MasterResponse des = new MasterResponse(hostname, port);
 	master_req(req, des);
     }
 
-    public void master_req_get_i(String path_name) throws IOException {
+    public void master_req_get_i(String path_name) throws Exception {
+    Path p = new Path(path_name);
 	MasterRequest req =
-	    new MasterRequest(MasterRequest.T.GET_PUBLISHER_OF_PATH, path_name);
+	    new MasterRequest(MasterRequest.T.GET_PUBLISHER_OF_PATH, p);
 	MasterResponse des =
 	    new MasterResponse(MasterResponse.T.NO_PUBLISHER_FOR_PATH);
 	master_req(req, des);
@@ -59,7 +64,7 @@ public class TestMaster {
     }
     
     @Test
-    public void test() throws IOException {
+    public void test() throws Exception {
 	System.out.println("Testing Master...");
 	int port = 8080;
 	Master m = new Master(port);

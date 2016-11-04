@@ -2,6 +2,8 @@ package Messages;
 
 import java.util.Optional;
 
+import Master.Paths.Path;
+
 public class MasterRequest {
     public enum T {
 	REGISTER_PUBLISHER,
@@ -9,7 +11,7 @@ public class MasterRequest {
 	GET_PUBLISHER_OF_PATH,
     }
     public final T type;
-    public final String path;
+    public final Path path;
     public final Optional<String> hostname;
     public final Optional<Integer> port;
 
@@ -18,7 +20,7 @@ public class MasterRequest {
      * [REMOVE_PUBLISHER] or [GET_PUBLISHER_OF_PATH] messages
      * @param path: path corresponsing to this message.
      */
-    public MasterRequest(T type, String path) {
+    public MasterRequest(T type, Path path) {
 	this.type = type;
 	this.path = path;
 	this.hostname = Optional.empty();
@@ -31,7 +33,7 @@ public class MasterRequest {
      * @param hostname: of publisher
      * @param port: of publisher
      */
-    public MasterRequest(String path, String hostname, int port) {
+    public MasterRequest(Path path, String hostname, int port) {
 	this.type = T.REGISTER_PUBLISHER;
 	this.path = path;
 	this.hostname = Optional.of(hostname);

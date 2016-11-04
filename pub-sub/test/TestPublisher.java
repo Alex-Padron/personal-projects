@@ -13,6 +13,7 @@ import com.google.gson.reflect.TypeToken;
 
 import Master.Master;
 import Master.MasterClient;
+import Master.Paths.Path;
 import Messages.PublisherRequest;
 import Messages.PublisherResponse;
 import Publisher.Publisher;
@@ -24,32 +25,36 @@ public class TestPublisher {
     Type msg_type;
     Gson parser;
 
-    public void pub_get_value(String path_name, int value) throws IOException {
+    public void pub_get_value(String path_name, int value) throws Exception {
+    Path p = new Path(path_name);
 	PublisherRequest msg =
-	    new PublisherRequest(PublisherRequest.T.GET_PATH_VALUE, path_name);
+	    new PublisherRequest(PublisherRequest.T.GET_PATH_VALUE, p);
 	PublisherResponse<Integer> des = new PublisherResponse<>(value);
 	publisher_req(msg, des);
     }
 
-    public void pub_get_value_i(String path_name) throws IOException {
+    public void pub_get_value_i(String path_name) throws Exception {
+    Path p = new Path(path_name);
 	PublisherRequest msg =
-	    new PublisherRequest(PublisherRequest.T.GET_PATH_VALUE, path_name);
+	    new PublisherRequest(PublisherRequest.T.GET_PATH_VALUE, p);
 	PublisherResponse<Integer> des =
 	    new PublisherResponse<>(PublisherResponse.T.NOT_PUBLISHING_PATH);
 	publisher_req(msg, des);
     }
 
-    public void pub_is_publishing(String path_name) throws IOException {
+    public void pub_is_publishing(String path_name) throws Exception {
+    Path p = new Path(path_name);
 	PublisherRequest msg =
-	    new PublisherRequest(PublisherRequest.T.QUERY_PUBLISHING_PATH, path_name);
+	    new PublisherRequest(PublisherRequest.T.QUERY_PUBLISHING_PATH, p);
 	PublisherResponse<Integer> des =
 	    new PublisherResponse<>(PublisherResponse.T.AM_PUBLISHING_PATH);
 	publisher_req(msg, des);
     }
 
-    public void pub_not_publishing(String path_name) throws IOException {
+    public void pub_not_publishing(String path_name) throws Exception {
+    Path p = new Path(path_name);
 	PublisherRequest msg =
-	    new PublisherRequest(PublisherRequest.T.QUERY_PUBLISHING_PATH, path_name);
+	    new PublisherRequest(PublisherRequest.T.QUERY_PUBLISHING_PATH, p);
 	PublisherResponse<Integer> des =
 	    new PublisherResponse<>(PublisherResponse.T.NOT_PUBLISHING_PATH);
 	publisher_req(msg, des);
@@ -70,7 +75,7 @@ public class TestPublisher {
     	assert(res.type.equals(PublisherResponse.T.INVALID_REQUEST));
     }
     @Test
-    public void test() throws IOException {
+    public void test() throws Exception {
 	System.out.println("Testing Publisher...");
 	int port = 8100;
 	String master_hostname = "localhost";
@@ -82,9 +87,9 @@ public class TestPublisher {
 	Thread t1 = new Thread(ms);
 	t1.start();
 
-	Map<String, Integer> paths = new HashMap<>();
-	paths.put("path1", 1);
-	paths.put("path2", 2);
+	Map<Path, Integer> paths = new HashMap<>();
+	paths.put(new Path("path1"), 1);
+	paths.put(new Path("path2"), 2);
 
 	Publisher<Integer> p =
 	    new Publisher<>(port,master_hostname, master_port, paths);
@@ -101,13 +106,13 @@ public class TestPublisher {
 
 	pub_get_value("path1", 1);
 
-	p.put_path("path3", 3);
+	p.put_path(new Path("path3"), 3);
 
 	pub_get_value("path3", 3);
 	pub_get_value_i("path4");
 	pub_get_value("path2", 2);
 
-	p.remove_path("path2");
+	p.remove_path(new Path("path2"));
 
 	pub_get_value_i("path2");
 	pub_is_publishing("path1");
@@ -117,19 +122,19 @@ public class TestPublisher {
 
 	MasterClient mc = new MasterClient("localhost", master_port);
 	p.send_paths_to_master();
-	assert(mc.get_path_addr("path1").get().getPort() == port);
-	assert(!mc.get_path_addr("path2").isPresent());
-	assert(mc.get_path_addr("path3").get().getPort() == port);
+	assert(mc.get_path_addr(new Path("path1")).get().getPort() == port);
+	assert(!mc.get_path_addr(new Path("path2")).isPresent());
+	assert(mc.get_path_addr(new Path("path3")).get().getPort() == port);
 
-	p.put_path("path2", 1);
+	p.put_path(new Path("path2"), 1);
 	p.send_paths_to_master();
 
-	assert(mc.get_path_addr("path2").get().getPort() == port);
+	assert(mc.get_path_addr(new Path("path2")).get().getPort() == port);
 
-	p.remove_path("path3");
+	p.remove_path(new Path("path3"));
 	p.send_paths_to_master();
 
-	assert(!mc.get_path_addr("path3").isPresent());
+	assert(!mc.get_path_addr(new Path("path3")).isPresent());
 	
 	// some malicious strings
 	

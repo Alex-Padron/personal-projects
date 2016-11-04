@@ -10,6 +10,7 @@ import java.util.Optional;
 
 import com.google.gson.Gson;
 
+import Master.Paths.Path;
 import Messages.MasterRequest;
 import Messages.MasterResponse;
 
@@ -35,12 +36,12 @@ public class MasterClient {
     }
 
     /**
-     * @param path_name: of the path to register
+     * @param path: to register
      * @param hostname: of the publisher for the path
      * @param port: of the publisher for the path
      */
-    public void register_path(String path_name, String hostname, int port) throws IOException {
-	MasterRequest request = new MasterRequest(path_name, hostname, port);
+    public void register_path(Path path, String hostname, int port) throws IOException {
+	MasterRequest request = new MasterRequest(path, hostname, port);
 	this.to_server.writeBytes(parser.toJson(request, MasterRequest.class) + "\n");
 	String raw_response = from_server.readLine();
 	MasterResponse response =
@@ -49,11 +50,10 @@ public class MasterClient {
     }
 
     /**
-     * @param path_name: of the path to remove
+     * @param path: to remove
      */
-    public void remove_path(String path_name) throws IOException {
-	MasterRequest request =
-	    new MasterRequest(MasterRequest.T.REMOVE_PUBLISHER, path_name);
+    public void remove_path(Path path) throws IOException {
+	MasterRequest request = new MasterRequest(MasterRequest.T.REMOVE_PUBLISHER, path);
 	this.to_server.writeBytes(parser.toJson(request, MasterRequest.class) + "\n");
 	String raw_response = from_server.readLine();
 	MasterResponse response =
@@ -62,12 +62,12 @@ public class MasterClient {
     }
 
     /**
-       @param path_name: of the path to query
+       @param path: of the path to query
        @return addr if one is being published, otherwise empty
      */
-    public Optional<InetSocketAddress> get_path_addr(String path_name) throws IOException {
+    public Optional<InetSocketAddress> get_path_addr(Path path) throws IOException {
 	MasterRequest request =
-	    new MasterRequest(MasterRequest.T.GET_PUBLISHER_OF_PATH, path_name);
+	    new MasterRequest(MasterRequest.T.GET_PUBLISHER_OF_PATH, path);
 	this.to_server.writeBytes(parser.toJson(request, MasterRequest.class) + "\n");
 	String raw_response = from_server.readLine();
 	MasterResponse response =

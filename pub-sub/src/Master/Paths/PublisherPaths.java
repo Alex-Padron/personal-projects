@@ -50,12 +50,13 @@ public class PublisherPaths {
     // throws exception if path not in trie
     public void remove(Path path) {
 	this.lock.lock();
-	int publisher_id = trie.get(path).get();
-	if (trie.remove(path)) {
-	    PublisherNode r = addrs.get_v(publisher_id);
+	Optional<Integer> publisher_id = trie.get(path);
+	boolean removed = trie.remove(path);
+	if (removed && publisher_id.isPresent()) {
+	    PublisherNode r = addrs.get_v(publisher_id.get());
 	    r.refcount -= 1;
 	    if (r.refcount == 0) {
-		addrs.remove_k(publisher_id);
+		addrs.remove_k(publisher_id.get());
 	    }
 	}
 	this.lock.unlock();

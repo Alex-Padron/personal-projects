@@ -3,9 +3,18 @@ package Master.Paths;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/*
+ * Paths that can be used to publish and subscribe. Similar to directory
+ * paths, they are represented as arrays of string components
+ */
 public class Path {
     private final String components[];
 
+    /*
+     * @param path_name: to be converted into a path
+     * @throws: exception if the path name does not match
+     * the pattern (in the validate method)
+     */
     public Path(String path_name) throws Exception {
 	validate(path_name);
 	components = path_name.split("/");

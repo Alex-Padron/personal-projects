@@ -18,6 +18,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import Master.MasterClient;
+import Master.Paths.Path;
 import Messages.PublisherRequest;
 import Messages.PublisherResponse;
 
@@ -25,16 +26,16 @@ import Messages.PublisherResponse;
  * Publisher of type T
  */
 public class Publisher<T> implements Runnable {
-    private ExecutorService executor;
-    private Lock lock;
-    private ServerSocket server_socket;
-    private MasterClient m_client;
-    private Map<String, T> path_data;
-    private Set<String> to_remove;
-    private int port;
-    private String hostname;
-    private Gson parser;
-    private Type response_type;
+    private final ExecutorService executor;
+    private final Lock lock;
+    private final ServerSocket server_socket;
+    private final MasterClient m_client;
+    private final Map<Path, T> path_data;
+    private final Set<Path> to_remove;
+    private final int port;
+    private final String hostname;
+    private final Gson parser;
+    private final Type response_type;
 
     /**
      * @param port: for the publisher to bind on
@@ -43,7 +44,7 @@ public class Publisher<T> implements Runnable {
      * is publishing
      */
     public Publisher(int port, String master_hostname, int master_port,
-		     Map<String, T> path_data) throws IOException
+		     Map<Path, T> path_data) throws IOException
     {
 	this.port = port;
 	this.hostname = "localhost";
@@ -59,22 +60,22 @@ public class Publisher<T> implements Runnable {
     }
 
     /**
-     * @param path_name: name of the path this is publishing
+     * @param path: name of the path this is publishing
      * @param value: new value for that path
      */
-    public void put_path(String path_name, T value) {
+    public void put_path(Path path, T value) {
 	this.lock.lock();
-	this.path_data.put(path_name, value);
+	this.path_data.put(path, value);
 	this.lock.unlock();
     }
 
     /**
-     * @param path_name: of the path to remove
+     * @param path: of the path to remove
      */
-    public void remove_path(String path_name) {
+    public void remove_path(Path path) {
 	this.lock.lock();
-	this.path_data.remove(path_name);
-	this.to_remove.add(path_name);
+	this.path_data.remove(path);
+	this.to_remove.add(path);
 	this.lock.unlock();
     }
 
@@ -85,11 +86,11 @@ public class Publisher<T> implements Runnable {
      */
     public void send_paths_to_master() throws IOException {
 	this.lock.lock();
-	for (String path_name : this.to_remove) {
-	    this.m_client.remove_path(path_name);
+	for (Path path : this.to_remove) {
+	    this.m_client.remove_path(path);
 	}
-	for (String path_name : this.path_data.keySet()) {
-	    this.m_client.register_path(path_name,
+	for (Path path : this.path_data.keySet()) {
+	    this.m_client.register_path(path,
 					this.hostname,
 					this.port);
 	}

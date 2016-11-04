@@ -11,7 +11,8 @@ import java.util.concurrent.Executors;
 
 import com.google.gson.Gson;
 
-import Master.Paths.MasterPublisherPaths;
+import Master.Paths.Path;
+import Master.Paths.PublisherPaths;
 import Messages.MasterRequest;
 import Messages.MasterResponse;
 
@@ -21,7 +22,7 @@ import Messages.MasterResponse;
  */
 public class Master implements Runnable {
     private ServerSocket server_socket;
-    private MasterPublisherPaths data;
+    private PublisherPaths data;
     private Gson parser;
     private ExecutorService executor;
 
@@ -33,7 +34,7 @@ public class Master implements Runnable {
 	this.server_socket = new ServerSocket();
 	this.server_socket.setReuseAddress(true);
 	this.server_socket.bind(new InetSocketAddress(port));
-	this.data = new MasterPublisherPaths();
+	this.data = new PublisherPaths();
 	this.parser = new Gson();
 	this.executor = Executors.newCachedThreadPool();
     }
@@ -83,7 +84,7 @@ public class Master implements Runnable {
 		write(to_client, remove_response());
 		break;
 	    case GET_PUBLISHER_OF_PATH:
-		String path = client_message.path;
+		Path path = client_message.path;
 		if (this.data.contains(path)) {
 		    write(to_client,filled_query_response(this.data.get(path)));
 		} else
