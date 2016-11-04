@@ -9,6 +9,7 @@ public class MasterRequest {
 	REGISTER_PUBLISHER,
 	REMOVE_PUBLISHER,
 	GET_PUBLISHER_OF_PATH,
+	GET_PATHS_UNDER,
     }
     public final T type;
     public final Path path;

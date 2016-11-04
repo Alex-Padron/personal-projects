@@ -114,7 +114,6 @@ public class Publisher<T> implements Runnable {
     }
 
     private void handle_client(Socket socket) throws IOException {
-	System.out.println("NEW CLIENT: " + socket);
 	BufferedReader from_client =
 	    new BufferedReader(new InputStreamReader(socket.getInputStream()));
 	DataOutputStream to_client =
@@ -129,7 +128,7 @@ public class Publisher<T> implements Runnable {
 		continue;
 	    }
 	    this.lock.lock();
-	    if (!path_data.containsKey(client_message.path))
+	    if (!path_data.containsKey(client_message.path)) 
 		write(to_client, not_publishing_response());
 	    else {
 		switch (client_message.type) {

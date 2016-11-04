@@ -1,6 +1,7 @@
 package Master.Paths;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.net.InetSocketAddress;
@@ -76,5 +77,9 @@ public class PublisherPaths {
 	boolean r = this.trie.contains(path);
 	this.lock.unlock();
 	return r;
+    }
+
+    public Set<String> get_paths_under(Path path) {
+	return trie.get_paths_under(path);
     }
 }

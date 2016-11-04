@@ -62,7 +62,7 @@ public class TestMaster {
     	MasterResponse res = parser.fromJson(s, MasterResponse.class);
     	assert(res.type.equals(MasterResponse.T.INVALID_REQUEST));
     }
-    
+
     @Test
     public void test() throws Exception {
 	System.out.println("Testing Master...");
@@ -86,7 +86,7 @@ public class TestMaster {
 	master_req_get_i("path1");
 
 	// Some malicious strings to try and kill the master server
-	
+
 	// doesn't parse
 	master_bad_string("sdadadadadasdafsdfsgfgsfgdsfg\n");
 	// register without required fields
@@ -94,7 +94,7 @@ public class TestMaster {
 	master_bad_string("{\"type\":\"REGISTER_PUBLISHER\",\"path\":\"path1\",\"hostname\":{\"value\":\"localhost\"},\"port\":{}}\n");
 	// remove with an extra field
 	master_bad_string("{\"type\":\"REMOVE_PUBLISHER\",\"path\":\"path1\",\"hostname\":{\"value\":\"localhost\"},\"port\":{}}\n");
-	
+
 	socket.close();
 	System.out.println("...passed");
     }

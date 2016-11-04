@@ -1,3 +1,5 @@
+import java.util.Set;
+
 import org.junit.Test;
 
 import Master.Paths.Path;
@@ -92,5 +94,43 @@ public class TestTrie {
 	
 
 	System.out.println("...passed");
+    }
+    
+    public void insert(Trie<Integer> t, String path_name, int value) throws Exception {
+    	t.insert(new Path(path_name), value);
+    }
+    
+    public void a_get(Trie<Integer> t, String path_name, int desired_value) throws Exception {
+    	assert(t.get(new Path(path_name)).get() == desired_value);
+    }
+    
+    @Test
+    public void test2() throws Exception {
+    	System.out.println("Testing Trie Nested Paths...");
+    	Trie<Integer> t = new Trie<>();
+    	insert(t, "foo/a", 1);
+    	insert(t, "foo/b", 2);
+    	insert(t, "foo/c", 3);
+    	Set<String> suffixes = t.get_paths_under(new Path("foo"));
+    	assert(suffixes.size() == 3);
+    	assert(suffixes.contains("a"));
+    	assert(suffixes.contains("b"));
+    	assert(suffixes.contains("c"));
+    	a_get(t, "foo/a", 1);
+    	a_get(t, "foo/b", 2);
+    	a_get(t, "foo/c", 3);
+    	
+    	assert(t.get_paths_under(new Path("asdasd")).size() == 0);
+    	
+    	insert(t, "foo/a/b", 4);
+    	insert(t, "foo/a/c", 5);
+    	
+    	suffixes = t.get_paths_under(new Path("foo/a"));
+    	assert(suffixes.size() == 2);
+    	assert(suffixes.contains("b"));
+    	assert(suffixes.contains("c"));
+    	assert(t.get_paths_under(new Path("foo")).size() == 3);
+    	
+    	System.out.println("...passed");
     }
 }

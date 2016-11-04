@@ -1,3 +1,5 @@
+import java.util.Hashtable;
+
 import org.junit.Test;
 
 import Master.Paths.Path;
@@ -55,6 +57,16 @@ public class TestPath {
 		assert(p4.length() == 3);
 		assert(p2.length() == 2);
 		assert(p.length() == 2);
+		
+		Path p5 = new Path("hello/world");
+		System.out.println(p);
+		Hashtable<Path, Integer> h = new Hashtable<>();
+		
+		assert(p5.equals(p));
+		assert(!p5.equals(p4));
+		
+		h.put(p, 1);
+		assert(h.containsKey(p5));
 		
 		System.out.println("...passed");
 	}

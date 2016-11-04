@@ -86,8 +86,7 @@ public class Subscriber<T> {
     }
 
     private Optional<T> get_from_publisher(InetSocketAddress addr,
-						 Path path) throws UnknownHostException, IOException
-    {
+					   Path path) throws UnknownHostException, IOException {
 	Socket socket;
 	if (sockets.containsKey(addr)) socket = sockets.get(addr);
 	else {
@@ -95,7 +94,7 @@ public class Subscriber<T> {
 	    sockets.put(addr, socket);
 	}
 	DataOutputStream to_server = new DataOutputStream(
-				     socket.getOutputStream());
+							  socket.getOutputStream());
 	BufferedReader from_server = new BufferedReader(
 				     new InputStreamReader(
 				     socket.getInputStream()));
@@ -105,5 +104,5 @@ public class Subscriber<T> {
 	PublisherResponse<T> response =
 	    parser.fromJson(from_server.readLine(), msg_type);
         return response.value;
-	}
+    }
 }

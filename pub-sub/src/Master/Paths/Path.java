@@ -58,6 +58,28 @@ public class Path {
 	return new Path(new_path_name);
     }
 
+    @Override
+    public boolean equals(Object obj) {
+	if (obj == null) return false;
+	if (!Path.class.isAssignableFrom(obj.getClass())) return false;
+	Path other = (Path) obj;
+	if (other.components.length != this.components.length) return false;
+	System.out.println("lengths are same");
+	for (int i = 0; i < components.length; i++) {
+	    if (!other.components[i].equals(this.components[i])) return false;
+	}
+	return true;
+    }
+
+    @Override
+    public int hashCode() {
+	int hash = 0;
+	for (int i = 0; i < components.length; i++) {
+	    hash+= components[i].hashCode();
+	}
+	return hash;
+    }
+
     private String[] copy_over_array(int length) {
 	String[] r = new String[length];
 	for (int i = 0; i < length; i++) {

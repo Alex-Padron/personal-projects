@@ -19,6 +19,11 @@ public class PublisherNode {
 	if (obj == null) return false;
 	if (!PublisherNode.class.isAssignableFrom(obj.getClass())) return false;
 	PublisherNode other = (PublisherNode) obj;
-	return other.addr == this.addr;
+	return other.addr.equals(this.addr);
+    }
+
+    @Override
+    public int hashCode() {
+	return refcount + addr.hashCode();
     }
 }

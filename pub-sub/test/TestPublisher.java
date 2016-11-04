@@ -62,8 +62,11 @@ public class TestPublisher {
 
     public void publisher_req(PublisherRequest msg,
 			      PublisherResponse<Integer> desired) throws IOException {
+    System.out.println("querying" + parser.toJson(msg, PublisherRequest.class));
 	to_server.writeBytes(parser.toJson(msg, PublisherRequest.class) + "\n");
 	String s = from_server.readLine();
+	System.out.println("got " + s);
+	System.out.println("expected " + parser.toJson(desired, msg_type));
 	PublisherResponse<Integer> res = parser.fromJson(s, msg_type);
 	assert(desired.equals(res));
     }
@@ -101,9 +104,7 @@ public class TestPublisher {
 	    new DataOutputStream(socket.getOutputStream());
 	from_server =
 	    new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-	System.out.println("Without Master...");
-
+	
 	pub_get_value("path1", 1);
 
 	p.put_path(new Path("path3"), 3);

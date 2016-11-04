@@ -1,6 +1,8 @@
 package Master.Trie;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 import Master.Paths.Path;
 
@@ -52,6 +54,12 @@ public class Trie<T> {
 	if (to_remove.children.size() > 0) return true;
 	filter_upwards(to_remove);
 	return true;
+    }
+
+    public Set<String> get_paths_under(Path path) {
+	TrieNode<T> target = navigate_to(path);
+	if (target == null) return new HashSet<>();
+	return target.children.keySet();
     }
 
     public boolean contains(Path path) {

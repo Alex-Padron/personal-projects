@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -30,7 +31,6 @@ public class Master implements Runnable {
      * @param port: for the master to bind on
      */
     public Master(int port) throws IOException {
-	System.out.println("MASTER ON PORT:" + port);
 	this.server_socket = new ServerSocket();
 	this.server_socket.setReuseAddress(true);
 	this.server_socket.bind(new InetSocketAddress(port));
@@ -40,7 +40,6 @@ public class Master implements Runnable {
     }
 
     public void run() {
-	System.out.println("RUNNING MASTER SERVER");
 	while(true) {
 	    try {
 		final Socket socket = this.server_socket.accept();
@@ -61,7 +60,6 @@ public class Master implements Runnable {
     }
 
     private void handle_client_connection(Socket socket) throws IOException{
-	System.out.println("NEW MASTER CLIENT: " + socket);
 	BufferedReader from_client =
 	    new BufferedReader(new InputStreamReader(socket.getInputStream()));
 	DataOutputStream to_client =
@@ -82,6 +80,9 @@ public class Master implements Runnable {
 	    case REMOVE_PUBLISHER:
 		this.data.remove(client_message.path);
 		write(to_client, remove_response());
+		break;
+	    case GET_PATHS_UNDER:
+		write(to_client, paths_response(this.data.get_paths_under(client_message.path)));
 		break;
 	    case GET_PUBLISHER_OF_PATH:
 		Path path = client_message.path;
@@ -108,6 +109,7 @@ public class Master implements Runnable {
 	    return msg.path.length() > 0
 		&& msg.hostname.isPresent()
 		&& msg.port.isPresent();
+	case GET_PATHS_UNDER:
 	case REMOVE_PUBLISHER:
 	case GET_PUBLISHER_OF_PATH:
 	    return msg.path.length() > 0
@@ -126,6 +128,10 @@ public class Master implements Runnable {
 	return new InetSocketAddress(msg.hostname.get(), msg.port.get());
     }
 
+    private MasterResponse paths_response(Set<String> paths) {
+    return new MasterResponse(paths);
+    }
+    
     private MasterResponse register_response() {
 	return new MasterResponse(MasterResponse.T.ACCEPT_UPDATE);
     }
