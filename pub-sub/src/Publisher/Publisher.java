@@ -128,7 +128,7 @@ public class Publisher<T> implements Runnable {
 		continue;
 	    }
 	    this.lock.lock();
-	    if (!path_data.containsKey(client_message.path)) 
+	    if (!path_data.containsKey(client_message.path))
 		write(to_client, not_publishing_response());
 	    else {
 		switch (client_message.type) {

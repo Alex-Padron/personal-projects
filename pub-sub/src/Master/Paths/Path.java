@@ -64,7 +64,6 @@ public class Path {
 	if (!Path.class.isAssignableFrom(obj.getClass())) return false;
 	Path other = (Path) obj;
 	if (other.components.length != this.components.length) return false;
-	System.out.println("lengths are same");
 	for (int i = 0; i < components.length; i++) {
 	    if (!other.components[i].equals(this.components[i])) return false;
 	}

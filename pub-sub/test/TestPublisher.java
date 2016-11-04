@@ -62,11 +62,8 @@ public class TestPublisher {
 
     public void publisher_req(PublisherRequest msg,
 			      PublisherResponse<Integer> desired) throws IOException {
-    System.out.println("querying" + parser.toJson(msg, PublisherRequest.class));
 	to_server.writeBytes(parser.toJson(msg, PublisherRequest.class) + "\n");
 	String s = from_server.readLine();
-	System.out.println("got " + s);
-	System.out.println("expected " + parser.toJson(desired, msg_type));
 	PublisherResponse<Integer> res = parser.fromJson(s, msg_type);
 	assert(desired.equals(res));
     }
@@ -104,7 +101,7 @@ public class TestPublisher {
 	    new DataOutputStream(socket.getOutputStream());
 	from_server =
 	    new BufferedReader(new InputStreamReader(socket.getInputStream()));
-	
+
 	pub_get_value("path1", 1);
 
 	p.put_path(new Path("path3"), 3);
@@ -118,8 +115,6 @@ public class TestPublisher {
 	pub_get_value_i("path2");
 	pub_is_publishing("path1");
 	pub_not_publishing("path2");
-
-	System.out.println("With Master...");
 
 	MasterClient mc = new MasterClient("localhost", master_port);
 	p.send_paths_to_master();
@@ -136,9 +131,9 @@ public class TestPublisher {
 	p.send_paths_to_master();
 
 	assert(!mc.get_path_addr(new Path("path3")).isPresent());
-	
+
 	// some malicious strings
-	
+
 	pub_bad_string("sadadadadad\n");
 	pub_bad_string("{\"type\":\"GET_PATH_VALUE\",\"path\":\"\"}\n");
 	socket.close();
