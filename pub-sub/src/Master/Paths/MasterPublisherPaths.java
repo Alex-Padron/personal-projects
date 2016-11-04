@@ -1,4 +1,4 @@
-package Master;
+package Master.Paths;
 import java.net.InetSocketAddress;
 import java.util.Hashtable;
 import java.util.concurrent.locks.Lock;

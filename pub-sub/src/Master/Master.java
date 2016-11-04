@@ -11,6 +11,7 @@ import java.util.concurrent.Executors;
 
 import com.google.gson.Gson;
 
+import Master.Paths.MasterPublisherPaths;
 import Messages.MasterRequest;
 import Messages.MasterResponse;
 
