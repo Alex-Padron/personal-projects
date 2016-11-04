@@ -3,6 +3,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.Optional;
+import java.util.Set;
+
 import org.junit.Test;
 
 import com.google.gson.Gson;
@@ -56,6 +59,14 @@ public class TestMaster {
 	assert(desired.equals(res));
     }
 
+    public Optional<Set<String>> master_paths_under(String path_name) throws Exception {
+    	MasterRequest req = new MasterRequest(MasterRequest.T.GET_PATHS_UNDER, new Path(path_name));
+    	to_server.writeBytes(parser.toJson(req, MasterRequest.class) + "\n");
+    	String s = from_server.readLine();
+    	MasterResponse res = parser.fromJson(s, MasterResponse.class);
+    	return res.paths;
+    }
+
     public void master_bad_string(String s) throws IOException {
     	to_server.writeBytes(s);
     	s = from_server.readLine();
@@ -97,5 +108,38 @@ public class TestMaster {
 
 	socket.close();
 	System.out.println("...passed");
+    }
+
+    @Test
+    public void test2() throws Exception {
+    	System.out.println("Testing Master Nested Paths...");
+    	int port = 8079;
+    	Master m = new Master(port);
+    	Thread t = new Thread(m);
+    	t.start();
+    	Socket socket = new Socket("localhost", port);
+    	to_server = new DataOutputStream(socket.getOutputStream());
+    	from_server =
+    	    new BufferedReader(new InputStreamReader(socket.getInputStream()));
+    	parser = new Gson();
+
+    	master_req_put("foo", "l", 1111);
+    	master_req_put("foo/bar", "l", 2222);
+    	master_req_put("foo/foo", "l", 3333);
+    	master_req_put("foo/baz", "l", 4444);
+    	master_req_get("foo", "l", 1111);
+    	master_req_get("foo/bar", "l", 2222);
+    	master_req_get("foo/foo", "l", 3333);
+    	master_req_get("foo/baz", "l", 4444);
+    	Set<String> s = master_paths_under("foo").get();
+    	assert(s.size() == 3);
+    	assert(s.contains("bar"));
+    	assert(s.contains("foo"));
+    	assert(s.contains("baz"));
+
+    	assert(master_paths_under("foo/bar").get().size() == 0);
+
+    	socket.close();
+    	System.out.println("...passed");
     }
 }
