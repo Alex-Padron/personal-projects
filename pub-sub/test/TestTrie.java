@@ -51,23 +51,29 @@ public class TestTrie {
 	p = new Path("abc");
 
 	assert(!t.get(p).isPresent());
+	assert(!t.contains(p));
 
 	p = new Path("foo/bar");
 
 	assert(t.get(p).get() == 4);
+	assert(t.contains(p));
 
 	p =  new Path("baz");
 
 	assert(t.get(p).get() == 2);
+	assert(t.contains(p));
 
-	t.remove(p);
+	assert(t.remove(p));
 
 	assert(!t.head.children.containsKey("baz"));
 	assert(t.head.children.get("foo").value == 5);
 	assert(!t.get(p).isPresent());
+	
+	p = new Path("fizz");
+	assert(!t.remove(p));
 
 	p = new Path("foo");
-	t.remove(p);
+	assert(t.remove(p));
 
 	assert(!t.head.children.get("foo").is_terminal);
 	assert(t.head.children.get("foo").children.get("bar").is_terminal);
@@ -79,10 +85,11 @@ public class TestTrie {
 
 	assert(t.get(p).get() == 4);
 
-	t.remove(p);
+	assert(t.remove(p));
 
 	assert(!t.get(p).isPresent());
 	assert(!t.head.children.containsKey("foo"));
+	
 
 	System.out.println("...passed");
     }

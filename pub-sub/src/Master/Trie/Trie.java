@@ -42,16 +42,22 @@ public class Trie<T> {
      * Removes a value from the trie and clears all uneeded nodes
      * after removing.
      * @param path: to remove value from
+     * @return whether a node was removed
      */
-    public void remove(Path path) {
+    public boolean remove(Path path) {
 	TrieNode<T> to_remove = navigate_to(path);
-	if (to_remove == null) return;
+	if (to_remove == null) return false;
 	to_remove.value = null;
 	to_remove.is_terminal = false;
-	if (to_remove.children.size() > 0) return;
+	if (to_remove.children.size() > 0) return true;
 	filter_upwards(to_remove);
+	return true;
     }
 
+    public boolean contains(Path path) {
+	TrieNode<T> node = navigate_to(path);
+	return node != null && node.is_terminal;
+    }
 
     // clears out uneeded nodes from current upwards to the root
     private void filter_upwards(TrieNode<T> current) {
