@@ -142,4 +142,34 @@ public class TestMaster {
     	socket.close();
     	System.out.println("...passed");
     }
+
+    @Test
+    public void test3() throws Exception {
+    	System.out.println("Testing Master Closing...");
+    	int port = 8078;
+    	Master m = new Master(port);
+    	Thread t = new Thread(m);
+    	t.start();
+    	Socket socket1 = new Socket("localhost", port);
+    	DataOutputStream to_server1 = 
+    			new DataOutputStream(socket1.getOutputStream());
+    	BufferedReader from_server1 =
+    	    new BufferedReader(new InputStreamReader(socket1.getInputStream()));
+    	to_server1.writeBytes("asdasdasd\n");
+    	from_server1.readLine();
+    	Socket socket2 = new Socket("localhost", port);
+    	DataOutputStream to_server2 = 
+    			new DataOutputStream(socket2.getOutputStream());
+    	BufferedReader from_server2 =
+        	    new BufferedReader(new InputStreamReader(socket2.getInputStream()));
+    	to_server2.writeBytes("saasfsdgfdsg\n");
+    	from_server2.readLine();
+    	assert(socket1.isBound());
+    	assert(socket2.isBound());
+    	m.close();
+    	assert(from_server1.read() == -1);
+    	assert(from_server2.read() == -1);
+    	socket1.close();
+    	socket2.close();
+    }
 }

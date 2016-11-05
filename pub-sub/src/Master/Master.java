@@ -24,6 +24,7 @@ import Messages.MasterResponse;
 public class Master implements Runnable {
     private ServerSocket server_socket;
     private PublisherPaths data;
+    private SocketSet socket_set;
     private Gson parser;
     private ExecutorService executor;
 
@@ -35,6 +36,7 @@ public class Master implements Runnable {
 	this.server_socket.setReuseAddress(true);
 	this.server_socket.bind(new InetSocketAddress(port));
 	this.data = new PublisherPaths();
+	this.socket_set = new SocketSet();
 	this.parser = new Gson();
 	this.executor = Executors.newCachedThreadPool();
     }
@@ -45,17 +47,27 @@ public class Master implements Runnable {
 		final Socket socket = this.server_socket.accept();
 		this.executor.execute(new Runnable() {
 			public void run() {
+			    final int socket_id = socket_set.add(socket);
 			    try {
 				handle_client_connection(socket);
 			    } catch (IOException e) {
-				System.out.println(e.getStackTrace());
+				System.out.println("MASTER CLIENT CONNECTION"
+						   + "ERROR - CLOSING " + e);
+				socket_set.remove(socket_id);
 			    }
 			}
 		    });
 	    } catch (IOException e) {
-		System.out.println("MASTER IO ERROR - CLOSING" + e);
+		System.out.println("MASTER IO ERROR - CLOSING " + e);
 		return;
 	    }
+	}
+    }
+
+    public void close() throws IOException {
+	this.server_socket.close();
+	for (Socket s : socket_set.to_close()) {
+	    s.close();
 	}
     }
 
