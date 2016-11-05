@@ -2,7 +2,7 @@ import java.util.Hashtable;
 
 import org.junit.Test;
 
-import Master.Paths.Path;
+import DataStructures.Path;
 
 public class TestPath {
 

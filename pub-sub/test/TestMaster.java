@@ -10,10 +10,10 @@ import org.junit.Test;
 
 import com.google.gson.Gson;
 
-import Master.Master;
-import Master.Paths.Path;
+import DataStructures.Path;
 import Messages.MasterRequest;
 import Messages.MasterResponse;
+import Public.Master;
 
 public class TestMaster {
     private DataOutputStream to_server;

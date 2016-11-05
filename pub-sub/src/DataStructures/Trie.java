@@ -1,10 +1,10 @@
-package Master.Trie;
+package DataStructures;
 
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-import Master.Paths.Path;
+
 
 /**
  * Implementation of a trie with keys storing type T

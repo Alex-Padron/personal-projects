@@ -1,4 +1,4 @@
-package Master;
+package Public;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -10,7 +10,7 @@ import java.util.Optional;
 
 import com.google.gson.Gson;
 
-import Master.Paths.Path;
+import DataStructures.Path;
 import Messages.MasterRequest;
 import Messages.MasterResponse;
 

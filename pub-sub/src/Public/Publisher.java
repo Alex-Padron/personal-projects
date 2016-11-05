@@ -1,4 +1,4 @@
-package Publisher;
+package Public;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -9,32 +9,26 @@ import java.net.Socket;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import Master.MasterClient;
-import Master.Paths.Path;
+import DataStructures.Path;
 import Messages.PublisherRequest;
 import Messages.PublisherResponse;
+import Server.MultiClientServer;
 
 /**
  * Publisher of type T
  */
-public class Publisher<T> implements Runnable {
-    private final ExecutorService executor;
+public class Publisher<T> extends MultiClientServer {
     private final Lock lock;
-    private final ServerSocket server_socket;
     private final MasterClient m_client;
     private final Map<Path, T> path_data;
     private final Set<Path> to_remove;
     private final int port;
     private final String hostname;
-    private final Gson parser;
     private final Type response_type;
 
     /**
@@ -48,14 +42,12 @@ public class Publisher<T> implements Runnable {
     {
 	this.port = port;
 	this.hostname = "localhost";
-	this.executor = Executors.newCachedThreadPool();
 	this.lock = new ReentrantLock();
 	this.server_socket = new ServerSocket(port);
 	this.server_socket.setReuseAddress(true);
 	this.m_client = new MasterClient(master_hostname, master_port);
 	this.path_data = path_data;
 	this.to_remove = new HashSet<>();
-	this.parser = new Gson();
 	this.response_type = new TypeToken<PublisherResponse<T>>(){}.getType();
     }
 
@@ -97,23 +89,7 @@ public class Publisher<T> implements Runnable {
 	this.lock.unlock();
     }
 
-    public void run() {
-	while (true) {
-	    Socket socket;
-	    try {
-		socket = this.server_socket.accept();
-		executor.execute(new Runnable() {
-			public void run() {
-			    try {
-				handle_client(socket);
-			    } catch (IOException e) {}
-			}
-		    });
-	    } catch (IOException e) {}
-	}
-    }
-
-    private void handle_client(Socket socket) throws IOException {
+    protected void handle_client_connection(Socket socket) throws IOException {
 	BufferedReader from_client =
 	    new BufferedReader(new InputStreamReader(socket.getInputStream()));
 	DataOutputStream to_client =

@@ -2,8 +2,8 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import Master.Paths.Path;
-import Master.Trie.Trie;
+import DataStructures.Path;
+import DataStructures.Trie;
 
 public class TestTrie {
 

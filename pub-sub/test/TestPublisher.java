@@ -11,12 +11,13 @@ import java.util.Map;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import Master.Master;
-import Master.MasterClient;
-import Master.Paths.Path;
+import DataStructures.Path;
 import Messages.PublisherRequest;
 import Messages.PublisherResponse;
-import Publisher.Publisher;
+import Public.Master;
+import Public.MasterClient;
+import Public.Publisher;
+
 import java.lang.reflect.Type;
 
 public class TestPublisher {

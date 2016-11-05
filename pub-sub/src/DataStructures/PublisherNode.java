@@ -1,4 +1,4 @@
-package Master.Paths;
+package DataStructures;
 
 import java.net.InetSocketAddress;
 

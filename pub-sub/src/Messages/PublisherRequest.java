@@ -1,6 +1,6 @@
 package Messages;
 
-import Master.Paths.Path;
+import DataStructures.Path;
 
 public class PublisherRequest {
     public enum T {

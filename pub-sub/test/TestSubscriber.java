@@ -3,10 +3,10 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import Master.Master;
-import Master.Paths.Path;
-import Publisher.Publisher;
-import Subscriber.Subscriber;
+import DataStructures.Path;
+import Public.Master;
+import Public.Publisher;
+import Public.Subscriber;
 
 public class TestSubscriber {
 

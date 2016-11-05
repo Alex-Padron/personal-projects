@@ -1,6 +1,6 @@
 import org.junit.Test;
 
-import Master.Paths.TwoWayMap;
+import DataStructures.TwoWayMap;
 
 public class TestTwoWayMap {
 

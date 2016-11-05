@@ -1,4 +1,5 @@
-package Master;
+package Public;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -7,71 +8,26 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-import com.google.gson.Gson;
-
-import Master.Paths.Path;
-import Master.Paths.PublisherPaths;
+import DataStructures.Path;
+import DataStructures.PublisherPaths;
 import Messages.MasterRequest;
 import Messages.MasterResponse;
+import Server.MultiClientServer;
 
-/**
- * Master server which allows publishers to register for paths,
- * and clients to query which publisher is publishing a given path
- */
-public class Master implements Runnable {
-    private ServerSocket server_socket;
-    private PublisherPaths data;
-    private SocketSet socket_set;
-    private Gson parser;
-    private ExecutorService executor;
-
-    /**
-     * @param port: for the master to bind on
-     */
-    public Master(int port) throws IOException {
-	this.server_socket = new ServerSocket();
-	this.server_socket.setReuseAddress(true);
-	this.server_socket.bind(new InetSocketAddress(port));
-	this.data = new PublisherPaths();
-	this.socket_set = new SocketSet();
-	this.parser = new Gson();
-	this.executor = Executors.newCachedThreadPool();
-    }
-
-    public void run() {
-	while(true) {
-	    try {
-		final Socket socket = this.server_socket.accept();
-		this.executor.execute(new Runnable() {
-			public void run() {
-			    final int socket_id = socket_set.add(socket);
-			    try {
-				handle_client_connection(socket);
-			    } catch (IOException e) {
-				System.out.println("MASTER CLIENT CONNECTION"
-						   + "ERROR - CLOSING " + e);
-				socket_set.remove(socket_id);
-			    }
-			}
-		    });
-	    } catch (IOException e) {
-		System.out.println("MASTER IO ERROR - CLOSING " + e);
-		return;
-	    }
+public class Master extends MultiClientServer {
+	private PublisherPaths data;
+	
+	
+	public Master(int port) throws IOException {
+		this.server_socket = new ServerSocket();
+		this.server_socket.setReuseAddress(true);
+		this.server_socket.bind(new InetSocketAddress(port));
+		this.data = new PublisherPaths();
 	}
-    }
 
-    public void close() throws IOException {
-	this.server_socket.close();
-	for (Socket s : socket_set.to_close()) {
-	    s.close();
-	}
-    }
-
-    private void handle_client_connection(Socket socket) throws IOException{
+    @Override
+    protected void handle_client_connection(Socket socket) throws IOException{
 	BufferedReader from_client =
 	    new BufferedReader(new InputStreamReader(socket.getInputStream()));
 	DataOutputStream to_client =
@@ -163,4 +119,5 @@ public class Master implements Runnable {
     private MasterResponse invalid_request() {
 	return new MasterResponse(MasterResponse.T.INVALID_REQUEST);
     }
+
 }

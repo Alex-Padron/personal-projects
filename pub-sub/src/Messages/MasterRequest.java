@@ -2,7 +2,7 @@ package Messages;
 
 import java.util.Optional;
 
-import Master.Paths.Path;
+import DataStructures.Path;
 
 public class MasterRequest {
     public enum T {

@@ -1,8 +1,9 @@
 import org.junit.Test;
 
-import Master.Master;
-import Master.MasterClient;
-import Master.Paths.Path;
+import DataStructures.Path;
+import Public.Master;
+import Public.MasterClient;
+
 
 public class TestMasterClient {
 

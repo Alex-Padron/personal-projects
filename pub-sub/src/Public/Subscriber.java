@@ -1,4 +1,4 @@
-package Subscriber;
+package Public;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -14,8 +14,7 @@ import java.net.InetSocketAddress;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import Master.MasterClient;
-import Master.Paths.Path;
+import DataStructures.Path;
 import Messages.PublisherRequest;
 import Messages.PublisherResponse;
 

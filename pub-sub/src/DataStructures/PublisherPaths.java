@@ -1,4 +1,4 @@
-package Master.Paths;
+package DataStructures;
 
 import java.util.Optional;
 import java.util.Set;
@@ -6,7 +6,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.net.InetSocketAddress;
 
-import Master.Trie.Trie;
+import DataStructures.Trie;
 
 /*
  * Data store for relation from path to publisher address. [addrs] stores the
