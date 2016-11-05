@@ -10,7 +10,7 @@ import java.net.Socket;
 import java.util.Set;
 
 import DataStructures.Path;
-import DataStructures.PublisherPaths;
+import DataStructures.publisherData.PublisherPaths;
 import Messages.MasterRequest;
 import Messages.MasterResponse;
 import Server.MultiClientServer;

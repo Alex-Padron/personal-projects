@@ -3,7 +3,7 @@ import java.util.Set;
 import org.junit.Test;
 
 import DataStructures.Path;
-import DataStructures.Trie;
+import DataStructures.trie.Trie;
 
 public class TestTrie {
 

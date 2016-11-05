@@ -1,4 +1,4 @@
-package DataStructures;
+package DataStructures.publisherData;
 
 import java.net.InetSocketAddress;
 

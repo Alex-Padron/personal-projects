@@ -6,7 +6,7 @@ import java.util.Set;
 import org.junit.Test;
 
 import DataStructures.Path;
-import DataStructures.PublisherPaths;
+import DataStructures.publisherData.PublisherPaths;
 
 public class TestPublisherPaths {
     PublisherPaths p;
