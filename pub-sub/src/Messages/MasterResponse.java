@@ -10,6 +10,7 @@ public class MasterResponse extends Serializable {
 	INVALID_REQUEST,
 	PUBLISHER_INFO,
 	ACCEPT_UPDATE,
+	REJECT_UPDATE,
 	NO_PUBLISHER_FOR_PATH,
 	PATH_SET
     }

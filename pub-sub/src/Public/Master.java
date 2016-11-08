@@ -39,13 +39,13 @@ public class Master extends MultiClientServer<MasterRequest, MasterResponse> {
         switch (req.type) {
 	case REGISTER_PUBLISHER: {
 	    NewPathBody body = Serializable.parse_exn(req.body, NewPathBody.class);
-	    this.data.add(body.path, body.hostname, body.port, body.lock_code);
-	    return accept_update_response();
+	    return this.data.add(body.path, body.hostname, body.port, body.lock_code) ?
+	    		accept_update_response() : reject_update_response();
 	}
 	case REMOVE_PUBLISHER: {
 	    RemovePathBody body = Serializable.parse_exn(req.body, RemovePathBody.class);
-	    this.data.remove(body.path, body.lock_code);
-	    return accept_update_response();
+	    return this.data.remove(body.path, body.lock_code) ? 
+	    		accept_update_response() : reject_update_response();
 	}
 	case GET_PATHS_UNDER: {
 	    PathBody body = Serializable.parse_exn(req.body, PathBody.class);
@@ -71,6 +71,10 @@ public class Master extends MultiClientServer<MasterRequest, MasterResponse> {
 
     private MasterResponse accept_update_response() {
 	return new MasterResponse(MasterResponse.T.ACCEPT_UPDATE);
+    }
+    
+    private MasterResponse reject_update_response() {
+    return new MasterResponse(MasterResponse.T.REJECT_UPDATE);
     }
 
     private MasterResponse filled_query_response(InetSocketAddress addr) {
