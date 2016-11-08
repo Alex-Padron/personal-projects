@@ -79,6 +79,10 @@ public class Subscriber<T> {
 	    if (!this.subscribe(path)) return Optional.empty();
 	}
     }
+    
+    public MasterClient get_master_client() {
+    	return this.MC;
+    }
 
     // close all active publisher connections
     public void close_connections() {

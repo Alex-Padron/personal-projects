@@ -6,13 +6,16 @@ import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 import DataStructures.Path;
 import Messages.MasterRequest;
 import Messages.MasterResponse;
 import Messages.Serializable;
 import Messages.Bodies.AddrBody;
+import Messages.Bodies.PathSetBody;
 
 /**
  * Simpler API for writing to/querying the master
@@ -77,7 +80,30 @@ public class MasterClient {
 	    (!response.get().type.equals(MasterResponse.T.PUBLISHER_INFO)))
 	    return Optional.empty();
 	AddrBody body =
-	    Serializable.parse(response.get().body, AddrBody.class).get();
+	    Serializable.parse_exn(response.get().body, AddrBody.class);
 	return Optional.of(new InetSocketAddress(body.hostname, body.port));
+    }
+
+    /**
+     * Gets all the possible extensions of a given path. If paths [a/b] and [a/c]
+     * are being published, calling this method on path [a] will return [b] and [c]
+     * as strings
+     * @param path: to query on
+     * @return: all possible extensions for this path
+     */
+    public Set<String> get_paths_under(Path path) throws IOException {
+	MasterRequest request =
+	    new MasterRequest(MasterRequest.T.GET_PATHS_UNDER, path);
+	this.to_server.writeBytes(request.json() + "\n");
+	String raw_response = from_server.readLine();
+	Optional<MasterResponse> response =
+	    Serializable.parse(raw_response, MasterResponse.class);
+	if ((!response.isPresent()) ||
+	    (!response.get().validate()) ||
+	    (!response.get().type.equals(MasterResponse.T.PATH_SET)))
+	    return new HashSet<>();
+	PathSetBody body =
+	    Serializable.parse_exn(response.get().body, PathSetBody.class);
+	return body.paths;
     }
 }

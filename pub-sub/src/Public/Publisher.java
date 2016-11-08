@@ -20,7 +20,7 @@ import Server.MultiClientServer;
  */
 public class Publisher<T> extends MultiClientServer<PublisherRequest, PublisherResponse<T>> {
     private final Lock lock;
-    private final MasterClient m_client;
+    private final MasterClient MC;
     private final Map<Path, T> path_data;
     private final Set<Path> to_remove;
     private final int port;
@@ -40,7 +40,7 @@ public class Publisher<T> extends MultiClientServer<PublisherRequest, PublisherR
 	this.lock = new ReentrantLock();
 	this.server_socket = new ServerSocket(port);
 	this.server_socket.setReuseAddress(true);
-	this.m_client = new MasterClient(master_hostname, master_port);
+	this.MC = new MasterClient(master_hostname, master_port);
 	this.path_data = path_data;
 	this.to_remove = new HashSet<>();
     }
@@ -73,16 +73,20 @@ public class Publisher<T> extends MultiClientServer<PublisherRequest, PublisherR
     public void send_paths_to_master() throws IOException {
 	this.lock.lock();
 	for (Path path : this.to_remove) {
-	    this.m_client.remove_path(path);
+	    this.MC.remove_path(path);
 	}
 	for (Path path : this.path_data.keySet()) {
-	    this.m_client.register_path(path,
+	    this.MC.register_path(path,
 					this.hostname,
 					this.port);
 	}
 	this.lock.unlock();
     }
 
+    public MasterClient get_master_client() {
+    	return this.MC;
+    }
+    
     @Override
     protected Optional<PublisherRequest> parse_client_string(String s) {
 	Optional<PublisherRequest> req =

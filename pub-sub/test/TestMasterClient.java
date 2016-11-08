@@ -1,3 +1,7 @@
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.junit.Test;
 
 import DataStructures.Path;
@@ -7,6 +11,12 @@ import Public.MasterClient;
 
 public class TestMasterClient {
 
+	private void add_paths(MasterClient mc, Path root, Set<String> extensions) throws IOException, Exception {
+		for (String ext : extensions) {
+			mc.register_path(root.append(ext), "localhost", 1111);
+		}	
+	}
+	
     @Test
     public void test() throws Exception {
 	System.out.println("Testing Master Client...");
@@ -36,7 +46,22 @@ public class TestMasterClient {
 	mc.remove_path(new Path("path1"));
 
 	assert(!mc.get_path_addr(new Path("path1")).isPresent());
-
+	
+	Path p = new Path("a");
+	Set<String> s = new HashSet<>();
+	s.add("b");
+	s.add("c");
+	s.add("d");
+	add_paths(mc, p, s);
+	s = mc.get_paths_under(p);
+	assert(s.size() == 3);
+	assert(s.contains("b"));
+	assert(s.contains("c"));
+	assert(s.contains("c"));
+	
+	s = mc.get_paths_under(new Path("path1"));
+	assert(s.size() == 0);
+	
 	System.out.println("...passed");
     }
 }
