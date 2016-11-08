@@ -8,8 +8,6 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import com.google.gson.Gson;
-
 import DataStructures.Path;
 import Messages.MasterRequest;
 import Messages.MasterResponse;
@@ -20,16 +18,23 @@ import Public.Master;
 public class TestMaster {
     private DataOutputStream to_server;
     private BufferedReader from_server;
-    private Gson parser;
 
     public void master_req_put(String path_name, String hostname, int port) throws Exception {
+    	master_req_put(path_name, hostname, port, "");
+    }
+    
+    public void master_req_put(String path_name, String hostname, int port, String lock_code) throws Exception {
     Path p = new Path(path_name);
-	MasterRequest req = new MasterRequest(p, hostname, port);
+	MasterRequest req = new MasterRequest(p, hostname, port, lock_code);
 	MasterResponse des = new MasterResponse(MasterResponse.T.ACCEPT_UPDATE);
 	master_req(req, des);
     }
 
     public void master_req_remove(String path_name) throws Exception {
+    	master_req_remove(path_name, "");
+    }
+    
+    public void master_req_remove(String path_name, String lock_code) throws Exception {
     Path p = new Path(path_name);
 	MasterRequest req =
 	    new MasterRequest(MasterRequest.T.REMOVE_PUBLISHER, p);
@@ -55,17 +60,17 @@ public class TestMaster {
     }
 
     public void master_req(MasterRequest msg, MasterResponse desired) throws IOException {
-	to_server.writeBytes(parser.toJson(msg, MasterRequest.class) + "\n");
+	to_server.writeBytes(msg.json() + "\n");
 	String s = from_server.readLine();
-	MasterResponse res = parser.fromJson(s, MasterResponse.class);
+	MasterResponse res = Serializable.parse_exn(s, MasterResponse.class);
 	assert(desired.equals(res));
     }
 
     public Optional<Set<String>> master_paths_under(String path_name) throws Exception {
     	MasterRequest req = new MasterRequest(MasterRequest.T.GET_PATHS_UNDER, new Path(path_name));
-    	to_server.writeBytes(parser.toJson(req, MasterRequest.class) + "\n");
+    	to_server.writeBytes(req.json() + "\n");
     	String s = from_server.readLine();
-    	MasterResponse res = parser.fromJson(s, MasterResponse.class);
+    	MasterResponse res = Serializable.parse_exn(s, MasterResponse.class);
     	if (!res.validate()) return Optional.empty();
     	PathSetBody b = Serializable.parse_exn(res.body, PathSetBody.class);
     	return Optional.of(b.paths);
@@ -74,7 +79,7 @@ public class TestMaster {
     public void master_bad_string(String s) throws IOException {
     	to_server.writeBytes(s);
     	s = from_server.readLine();
-    	MasterResponse res = parser.fromJson(s, MasterResponse.class);
+    	MasterResponse res = Serializable.parse_exn(s, MasterResponse.class);
     	assert(res.type.equals(MasterResponse.T.INVALID_REQUEST));
     }
 
@@ -89,7 +94,6 @@ public class TestMaster {
 	to_server = new DataOutputStream(socket.getOutputStream());
 	from_server =
 	    new BufferedReader(new InputStreamReader(socket.getInputStream()));
-	parser = new Gson();
 
 	master_req_put("path1", "localhost", 1111);
 	master_req_get_i("path2");
@@ -125,7 +129,6 @@ public class TestMaster {
     	to_server = new DataOutputStream(socket.getOutputStream());
     	from_server =
     	    new BufferedReader(new InputStreamReader(socket.getInputStream()));
-    	parser = new Gson();
 
     	master_req_put("foo", "l", 1111);
     	master_req_put("foo/bar", "l", 2222);
@@ -176,4 +179,30 @@ public class TestMaster {
     	socket1.close();
     	socket2.close();
     }
+    
+    @Test
+    public void test4() throws Exception {
+    	System.out.println("Testing Master Locking Paths...");
+    	int port = 8077;
+    	Master m = new Master(port);
+    	Thread t = new Thread(m);
+    	t.start();
+    	
+    	// TODO: add tests here
+    	
+    	Socket socket = new Socket("localhost", port);
+    	to_server = new DataOutputStream(socket.getOutputStream());
+    	from_server =
+    	    new BufferedReader(new InputStreamReader(socket.getInputStream()));
+    	master_req_put("a/b", "localhost", 1111, "locked");
+    	socket.close();
+    	System.out.println("...passed");
+    }
+    
+    
+    
+    
+    
+    
+    
 }

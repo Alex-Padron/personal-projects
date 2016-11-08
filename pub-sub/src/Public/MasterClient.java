@@ -37,12 +37,23 @@ public class MasterClient {
     }
 
     /**
+     * Convenience wrapper to register an unlocked path, see doc below
+     */
+    public boolean register_path(Path path, String hostname, int port) throws IOException {
+	return register_path(path, hostname, port, "");
+    }
+
+    /**
      * @param path: to register
      * @param hostname: of the publisher for the path
      * @param port: of the publisher for the path
+     * @param lock_code: to use to lock the path, or "" to not lock
      */
-    public boolean register_path(Path path, String hostname, int port) throws IOException {
-	MasterRequest request = new MasterRequest(path, hostname, port);
+    public boolean register_path(Path path,
+				 String hostname,
+				 int port,
+				 String lock_code) throws IOException {
+	MasterRequest request = new MasterRequest(path, hostname, port, lock_code);
 	this.to_server.writeBytes(request.json() + "\n");
 	String raw_response = from_server.readLine();
 	Optional<MasterResponse> response =
@@ -52,10 +63,18 @@ public class MasterClient {
     }
 
     /**
-     * @param path: to remove
+     * Convenience wrapper to remove an unlocked path, see doc below
      */
     public boolean remove_path(Path path) throws IOException {
-	MasterRequest request = new MasterRequest(MasterRequest.T.REMOVE_PUBLISHER, path);
+	return remove_path(path, "");
+    }
+
+    /**
+     * @param path: to remove
+     * @param lock_code: to lock the path with
+     */
+    public boolean remove_path(Path path, String lock_code) throws IOException {
+	MasterRequest request = new MasterRequest(path, lock_code);
 	this.to_server.writeBytes(request.json() + "\n");
 	String raw_response = from_server.readLine();
 	Optional<MasterResponse> response =

@@ -1,4 +1,3 @@
-import java.net.InetSocketAddress;
 import java.util.Hashtable;
 import java.util.Random;
 import java.util.Set;
@@ -16,16 +15,15 @@ public class TestPublisherPaths {
     }
     
     boolean insert(String path_name, int port, String lock_code) throws Exception {
-	InetSocketAddress i = new InetSocketAddress("localhost", port);
-	return p.add(new Path(path_name), i, lock_code);
+	return p.add(new Path(path_name), "localhost", port, lock_code);
     }
 
     void check(String path_name, int expected_port) throws Exception {
-	assert(p.get(new Path(path_name)).getPort() == expected_port);
+	assert(p.get(new Path(path_name)).get().getPort() == expected_port);
     }
 
     int get(String path_name) throws Exception {
-	return p.get(new Path(path_name)).getPort();
+	return p.get(new Path(path_name)).get().getPort();
     }
 
     boolean contains(String path_name) throws Exception {

@@ -31,10 +31,7 @@ public class PublisherPaths {
 	this.lock = new ReentrantLock();
     }
 
-    public boolean add(Path path, InetSocketAddress publisher_addr) {
-    	return add(path, publisher_addr, "");
-    }
-    public boolean add(Path path, InetSocketAddress publisher_addr, String lock_code) {
+    public boolean add(Path path, String hostname, int port, String lock_code) {
 	lock.lock();
 	Optional<PathNode> maybe_currently_inserted = trie.get(path);
 	if (maybe_currently_inserted.isPresent()) {
@@ -48,7 +45,7 @@ public class PublisherPaths {
 	    // decrement the ref count of the publisher being removed
 	    addrs.get_v(currently_inserted.publisher_id).refcount--;
 	}
-	PublisherNode publisher = new PublisherNode(publisher_addr);
+	PublisherNode publisher = new PublisherNode(hostname, port);
 	if (!addrs.contains_v(publisher)) {
 	    addrs.insert(publisher_num, publisher);
 	    publisher_num++;
@@ -59,10 +56,6 @@ public class PublisherPaths {
 	trie.insert(path, to_insert);
 	lock.unlock();
 	return true;
-    }
-
-    public boolean remove(Path path) {
-    	return remove(path, "");
     }
 
     public boolean remove(Path path, String lock_code) {
@@ -90,22 +83,29 @@ public class PublisherPaths {
 	return true;
     }
 
-    public InetSocketAddress get(Path path) {
-	this.lock.lock();
-	PathNode from_trie = trie.get(path).get();
-	InetSocketAddress r = addrs.get_v(from_trie.publisher_id).addr;
-	this.lock.unlock();
-	return r;
+    public Optional<InetSocketAddress> get(Path path) {
+	lock.lock();
+	Optional<PathNode> from_trie = trie.get(path);
+	if (from_trie.isPresent()) {
+		PublisherNode p = addrs.get_v(from_trie.get().publisher_id);
+		lock.unlock();
+		return Optional.of(new InetSocketAddress(p.hostname, p.port));
+	}
+	lock.unlock();
+	return Optional.empty();
     }
 
     public boolean contains(Path path) {
-	this.lock.lock();
+	lock.lock();
 	boolean r = this.trie.contains(path);
-	this.lock.unlock();
+	lock.unlock();
 	return r;
     }
 
     public Set<String> get_paths_under(Path path) {
-	return trie.get_paths_under(path);
+	lock.lock();
+	Set<String> s = trie.get_paths_under(path);
+	lock.unlock();
+	return s;
     }
 }

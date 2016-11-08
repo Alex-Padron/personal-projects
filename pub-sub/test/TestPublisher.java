@@ -8,12 +8,12 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import DataStructures.Path;
 import Messages.PublisherRequest;
 import Messages.PublisherResponse;
+import Messages.Serializable;
 import Public.Master;
 import Public.MasterClient;
 import Public.Publisher;
@@ -24,7 +24,6 @@ public class TestPublisher {
     DataOutputStream to_server;
     BufferedReader from_server;
     Type msg_type;
-    Gson parser;
 
     public void pub_get_value(String path_name, int value) throws Exception {
     Path p = new Path(path_name);
@@ -63,16 +62,16 @@ public class TestPublisher {
 
     public void publisher_req(PublisherRequest msg,
 			      PublisherResponse<Integer> desired) throws IOException {
-	to_server.writeBytes(parser.toJson(msg, PublisherRequest.class) + "\n");
+	to_server.writeBytes(msg.json() + "\n");
 	String s = from_server.readLine();
-	PublisherResponse<Integer> res = parser.fromJson(s, msg_type);
+	PublisherResponse<Integer> res = Serializable.parse_exn(s, msg_type);
 	assert(desired.equals(res));
     }
 
     public void pub_bad_string(String s) throws IOException {
     	to_server.writeBytes(s);
     	s = from_server.readLine();
-    	PublisherResponse<Integer> res = parser.fromJson(s, msg_type);
+    	PublisherResponse<Integer> res = Serializable.parse_exn(s, msg_type);
     	assert(res.type.equals(PublisherResponse.T.INVALID_REQUEST));
     }
     @Test
@@ -81,7 +80,6 @@ public class TestPublisher {
 	int port = 8100;
 	String master_hostname = "localhost";
 	int master_port = 8101;
-	parser = new Gson();
 	msg_type = new TypeToken<PublisherResponse<Integer>>(){}.getType();
 
 	Master ms = new Master(master_port);

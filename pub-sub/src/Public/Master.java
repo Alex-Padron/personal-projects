@@ -11,6 +11,7 @@ import Messages.MasterRequest;
 import Messages.MasterResponse;
 import Messages.Serializable;
 import Messages.Bodies.PathBody;
+import Messages.Bodies.RemovePathBody;
 import Messages.Bodies.NewPathBody;
 import Server.MultiClientServer;
 
@@ -38,12 +39,12 @@ public class Master extends MultiClientServer<MasterRequest, MasterResponse> {
         switch (req.type) {
 	case REGISTER_PUBLISHER: {
 	    NewPathBody body = Serializable.parse_exn(req.body, NewPathBody.class);
-	    this.data.add(body.path, new InetSocketAddress(body.hostname, body.port));
+	    this.data.add(body.path, body.hostname, body.port, body.lock_code);
 	    return accept_update_response();
 	}
 	case REMOVE_PUBLISHER: {
-	    PathBody body = Serializable.parse_exn(req.body, PathBody.class);
-	    this.data.remove(body.path);
+	    RemovePathBody body = Serializable.parse_exn(req.body, RemovePathBody.class);
+	    this.data.remove(body.path, body.lock_code);
 	    return accept_update_response();
 	}
 	case GET_PATHS_UNDER: {
@@ -52,11 +53,11 @@ public class Master extends MultiClientServer<MasterRequest, MasterResponse> {
 	}
 	case GET_PUBLISHER_OF_PATH: {
 	    PathBody body = Serializable.parse_exn(req.body, PathBody.class);
-	    if (this.data.contains(body.path)) {
-		return filled_query_response(this.data.get(body.path));
-	    } else {
-		return empty_query_response();
+	    Optional<InetSocketAddress> query_response = data.get(body.path);
+	    if (query_response.isPresent()) {
+		return filled_query_response(query_response.get());
 	    }
+	    return empty_query_response();
 	}
 	default:
 	    return invalid_request();
