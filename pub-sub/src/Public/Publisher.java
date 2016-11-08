@@ -26,7 +26,7 @@ public class Publisher<T> extends MultiClientServer<PublisherRequest, PublisherR
     private final int port;
     private final String hostname;
 
-    /**
+	/**
      * @param port: for the publisher to bind on
      * @param master_hostname, master_port: location of the master
      * @param path_data: initial set of paths/values that the publisher
@@ -45,7 +45,7 @@ public class Publisher<T> extends MultiClientServer<PublisherRequest, PublisherR
 	this.to_remove = new HashSet<>();
 	this.server_name = "PUBLISHER";
     }
-
+    
     /**
      * @param path: name of the path this is publishing
      * @param value: new value for that path
