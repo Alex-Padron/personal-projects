@@ -38,14 +38,10 @@ public class PublisherResponse<V> extends Serializable {
 	this.body = new ValueBody<V>(value).json();
     }
 
-    @Override
-    public boolean equals(Object obj) {
-	if (obj == null) return false;
-	if (!(obj instanceof PublisherResponse<?>)) return false;
-	PublisherResponse<?> other = (PublisherResponse<?>) obj;
-	return other.type.equals(this.type) && other.body.equals(this.body);
-    }
-    
+    /**
+     * @return whether the body of the message parses to a valid type
+     * matching the specified type.
+     */
     public boolean validate() {
 	switch (this.type) {
 	case NOT_PUBLISHING_PATH:
@@ -53,9 +49,23 @@ public class PublisherResponse<V> extends Serializable {
 	case INVALID_REQUEST:
 	    return body.equals("");
 	case VALUE_RESPONSE:
-		return Serializable.parse(body, t).isPresent(); 
+		return Serializable.parse(body, t).isPresent();
 	default:
 		return false;
 	}
     }
+
+    @Override
+    public boolean equals(Object obj) {
+	if (obj == null) return false;
+	if (!(obj instanceof PublisherResponse<?>)) return false;
+	PublisherResponse<?> other = (PublisherResponse<?>) obj;
+	return other.type.equals(this.type) && other.body.equals(this.body);
+    }
+
+    @Override
+    public int hashCode() {
+	return this.type.hashCode() + this.body.hashCode();
+    }
+
 }

@@ -38,7 +38,6 @@ public class MasterRequest extends Serializable {
     	this.type = T.REGISTER_PUBLISHER;
     	this.body = new NewPathBody(path, hostname, port, lock_code).json();
     }
-    
     /**
      * Create a master request to remove a path using the lock code provided
      */
@@ -47,6 +46,10 @@ public class MasterRequest extends Serializable {
     	this.body = new RemovePathBody(path, lock_code).json();
     }
 
+    /**
+     * @return whether the body of the message parses to a valid type
+     * matching the specified type.
+     */
     public boolean validate() {
 	switch (this.type) {
 	case REGISTER_PUBLISHER:
@@ -55,7 +58,8 @@ public class MasterRequest extends Serializable {
 	    try {
 	    	// just want to check whether the host and port are a valid address
 	    	@SuppressWarnings("unused")
-			InetSocketAddress i = new InetSocketAddress(pb.get().hostname, pb.get().port);
+		InetSocketAddress i =
+		    new InetSocketAddress(pb.get().hostname, pb.get().port);
 	    	return true;
 	    } catch (Exception e) {
 	    	return false;
@@ -67,5 +71,18 @@ public class MasterRequest extends Serializable {
 	default:
 		return false;
 	}
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+	if (obj == null) return false;
+	if (!MasterRequest.class.isAssignableFrom(obj.getClass())) return false;
+	MasterRequest other = (MasterRequest) obj;
+	return other.type.equals(this.type) && other.body.equals(this.body);
+    }
+
+    @Override
+    public int hashCode() {
+	return this.type.hashCode() + this.body.hashCode();
     }
 }

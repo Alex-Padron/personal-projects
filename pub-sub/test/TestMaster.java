@@ -23,7 +23,7 @@ public class TestMaster {
     public void master_req_put(String path_name, String hostname, int port) throws Exception {
     	assert(master_req_put(path_name, hostname, port, ""));
     }
-    
+
     public boolean master_req_put(String path_name, String hostname, int port, String lock_code) throws Exception {
     Path p = new Path(path_name);
 	MasterRequest req = new MasterRequest(p, hostname, port, lock_code);
@@ -37,7 +37,7 @@ public class TestMaster {
     public void master_req_remove(String path_name) throws Exception {
     	assert(master_req_remove(path_name, ""));
     }
-    
+
     public boolean master_req_remove(String path_name, String lock_code) throws Exception {
 	MasterRequest req =
 	    new MasterRequest(new Path(path_name), lock_code);
@@ -164,14 +164,14 @@ public class TestMaster {
     	Thread t = new Thread(m);
     	t.start();
     	Socket socket1 = new Socket("localhost", port);
-    	DataOutputStream to_server1 = 
+    	DataOutputStream to_server1 =
     			new DataOutputStream(socket1.getOutputStream());
     	BufferedReader from_server1 =
     	    new BufferedReader(new InputStreamReader(socket1.getInputStream()));
     	to_server1.writeBytes("asdasdasd\n");
     	from_server1.readLine();
     	Socket socket2 = new Socket("localhost", port);
-    	DataOutputStream to_server2 = 
+    	DataOutputStream to_server2 =
     			new DataOutputStream(socket2.getOutputStream());
     	BufferedReader from_server2 =
         	    new BufferedReader(new InputStreamReader(socket2.getInputStream()));
@@ -185,7 +185,7 @@ public class TestMaster {
     	socket1.close();
     	socket2.close();
     }
-    
+
     @Test
     public void test4() throws Exception {
     	System.out.println("Testing Master Locking Paths...");
@@ -193,12 +193,12 @@ public class TestMaster {
     	Master m = new Master(port);
     	Thread t = new Thread(m);
     	t.start();
-    	
+
     	Socket socket = new Socket("localhost", port);
     	to_server = new DataOutputStream(socket.getOutputStream());
     	from_server =
     	    new BufferedReader(new InputStreamReader(socket.getInputStream()));
-    	
+
     	assert(master_req_put("a/b", "localhost", 1111, "locked"));
     	assert(!master_req_put("a/b", "localhost", 2222, "sdadad"));
     	master_req_get("a/b", "localhost", 1111);
@@ -214,15 +214,9 @@ public class TestMaster {
     	assert(!master_req_put("a/c", "localhost", 5555, "lock1"));
     	master_req_get("a/b", "localhost", 4444);
     	master_req_get("a/c", "localhost", 5555);
-    	
+
     	socket.close();
+
     	System.out.println("...passed");
     }
-    
-    
-    
-    
-    
-    
-    
 }

@@ -87,7 +87,7 @@ public class Publisher<T> extends MultiClientServer<PublisherRequest, PublisherR
     public MasterClient get_master_client() {
     	return this.MC;
     }
-    
+
     @Override
     protected Optional<PublisherRequest> parse_client_string(String s) {
 	Optional<PublisherRequest> req =
@@ -98,7 +98,7 @@ public class Publisher<T> extends MultiClientServer<PublisherRequest, PublisherR
     }
 
     protected PublisherResponse<T> handle_request(PublisherRequest req) {
-    this.lock.lock();
+	this.lock.lock();
 	switch (req.type) {
 	case QUERY_PUBLISHING_PATH: {
 	    PathBody body = Serializable.parse_exn(req.body, PathBody.class);

@@ -7,8 +7,6 @@ the publisher. Each path only has a single value at a time, they can be thought
 of as a stream.
 
 ###
-switch master data structure to use optional and bool rather than exceptions
-add permissioning on master server
 add authentication for publishers (master signs that the given publisher is
 the correct one)
 add close methods for subscriber

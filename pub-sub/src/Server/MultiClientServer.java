@@ -13,7 +13,7 @@ import com.google.gson.Gson;
 
 import Messages.Serializable;
 
-public abstract class MultiClientServer<Request extends Serializable, Response extends Serializable> implements Runnable{
+public abstract class MultiClientServer<Request extends Serializable, Response extends Serializable> implements Runnable {
     protected ServerSocket server_socket;
     protected Executor executor = Executors.newCachedThreadPool();
     protected SocketSet socket_set = new SocketSet();
@@ -45,6 +45,7 @@ public abstract class MultiClientServer<Request extends Serializable, Response e
 	}
     }
 
+    // close all active socket connections, and the server socket itself
     public void close() throws IOException {
 	this.server_socket.close();
 	for (Socket s : socket_set.to_close()) {

@@ -16,7 +16,7 @@ public class MasterResponse extends Serializable {
     }
     public final T type;
     public final String body;
-    
+
     /**
      * Master response without publisher data
      * @param type: of message. Should not be [PUBLISHER_INFO], since this
@@ -45,7 +45,11 @@ public class MasterResponse extends Serializable {
 	this.type = T.PATH_SET;
 	this.body = new PathSetBody(paths).json();
     }
-    
+
+    /**
+     * @return whether the body of the message parses to a valid type
+     * matching the specified type.
+     */
     public boolean validate() {
     	switch (type) {
     	case INVALID_REQUEST:
@@ -67,5 +71,10 @@ public class MasterResponse extends Serializable {
 	if (!MasterResponse.class.isAssignableFrom(obj.getClass())) return false;
 	MasterResponse other = (MasterResponse) obj;
 	return other.type.equals(this.type) && other.body.equals(this.body);
+    }
+
+    @Override
+    public int hashCode() {
+	return this.type.hashCode() + this.body.hashCode();
     }
 }

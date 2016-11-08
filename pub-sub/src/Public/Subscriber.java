@@ -79,18 +79,21 @@ public class Subscriber<T> {
 	    if (!this.subscribe(path)) return Optional.empty();
 	}
     }
-    
+
     public MasterClient get_master_client() {
     	return this.MC;
     }
 
     // close all active publisher connections
-    public void close_connections() {
-    	// TODO
+    public void close_connections() throws IOException {
+	for (Socket socket : sockets.values()) {
+	    socket.close();
+	}
     }
 
     private Optional<T> get_from_publisher(InetSocketAddress addr,
-					   Path path) throws UnknownHostException, IOException {
+					   Path path) throws UnknownHostException, IOException
+    {
 	Socket socket;
 	if (sockets.containsKey(addr)) socket = sockets.get(addr);
 	else {

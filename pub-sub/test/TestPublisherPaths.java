@@ -13,7 +13,7 @@ public class TestPublisherPaths {
     boolean insert(String path_name, int port) throws Exception {
     	return insert(path_name, port, "");
     }
-    
+
     boolean insert(String path_name, int port, String lock_code) throws Exception {
 	return p.add(new Path(path_name), "localhost", port, lock_code);
     }
@@ -33,7 +33,7 @@ public class TestPublisherPaths {
     boolean remove(String path_name) throws Exception {
     	return remove(path_name, "");
     }
-    
+
     boolean remove(String path_name, String lock_code) throws Exception {
 	return p.remove(new Path(path_name), lock_code);
     }
@@ -113,8 +113,8 @@ public class TestPublisherPaths {
 	}
 	System.out.println("...passed");
     }
-    
-    @Test 
+
+    @Test
     public void test4() throws Exception {
     	System.out.println("Test Locking Paths...");
     	p = new PublisherPaths();
@@ -130,29 +130,3 @@ public class TestPublisherPaths {
     	System.out.println("...passed");
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

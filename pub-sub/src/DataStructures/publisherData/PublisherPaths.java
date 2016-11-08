@@ -14,7 +14,9 @@ import DataStructures.trie.Trie;
  * Data store for relation from path to publisher address. [addrs] stores the
  * set of publisher paths in a two way map from int id to address. [trie] stores
  * a relation from path to int that can be indexed into [addrs]. [p_num] is a
- * strictly increasing index used to id publishers.
+ * strictly increasing index used to id publishers. Additionally, each path
+ * can be locked with a lock code such that it can only be updated by someone
+ * with the same lock code
  *
  * This data structure is thread safe using a global lock
  */
@@ -102,6 +104,8 @@ public class PublisherPaths {
 	return r;
     }
 
+    // returns an empty set if the path is not in the trie or if
+    // it doesn't have children
     public Set<String> get_paths_under(Path path) {
 	lock.lock();
 	Set<String> s = trie.get_paths_under(path);

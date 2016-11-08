@@ -43,8 +43,9 @@ public class Master extends MultiClientServer<MasterRequest, MasterResponse> {
 	    		accept_update_response() : reject_update_response();
 	}
 	case REMOVE_PUBLISHER: {
-	    RemovePathBody body = Serializable.parse_exn(req.body, RemovePathBody.class);
-	    return this.data.remove(body.path, body.lock_code) ? 
+	    RemovePathBody body =
+		Serializable.parse_exn(req.body, RemovePathBody.class);
+	    return this.data.remove(body.path, body.lock_code) ?
 	    		accept_update_response() : reject_update_response();
 	}
 	case GET_PATHS_UNDER: {
@@ -72,7 +73,7 @@ public class Master extends MultiClientServer<MasterRequest, MasterResponse> {
     private MasterResponse accept_update_response() {
 	return new MasterResponse(MasterResponse.T.ACCEPT_UPDATE);
     }
-    
+
     private MasterResponse reject_update_response() {
     return new MasterResponse(MasterResponse.T.REJECT_UPDATE);
     }
