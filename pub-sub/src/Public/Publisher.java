@@ -43,6 +43,7 @@ public class Publisher<T> extends MultiClientServer<PublisherRequest, PublisherR
 	this.MC = new MasterClient(master_hostname, master_port);
 	this.path_data = path_data;
 	this.to_remove = new HashSet<>();
+	this.server_name = "PUBLISHER";
     }
 
     /**
