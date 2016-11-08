@@ -1,9 +1,11 @@
 package Messages;
 
-import java.util.Optional;
 import java.util.Set;
 
-public class MasterResponse {
+import Messages.Bodies.PathSetBody;
+import Messages.Bodies.AddrBody;
+
+public class MasterResponse extends Serializable {
     public enum T {
 	INVALID_REQUEST,
 	PUBLISHER_INFO,
@@ -12,20 +14,16 @@ public class MasterResponse {
 	PATH_SET
     }
     public final T type;
-    public final Optional<Set<String>> paths;
-    public final Optional<String> hostname;
-    public final Optional<Integer> port;
-
+    public final String body;
+    
     /**
      * Master response without publisher data
      * @param type: of message. Should not be [PUBLISHER_INFO], since this
      * constructor does not take publisher info
      */
     public MasterResponse(T type) {
-	this.type = type;
-	this.hostname = Optional.empty();
-	this.port = Optional.empty();
-	this.paths = Optional.empty();
+    	this.type = type;
+    	this.body = "";
     }
 
     /**
@@ -34,10 +32,8 @@ public class MasterResponse {
      * @param port: of publisher
      */
     public MasterResponse(String hostname, int port) {
-	this.type = T.PUBLISHER_INFO;
-	this.hostname = Optional.of(hostname);
-	this.port = Optional.of(port);
-	this.paths = Optional.empty();
+    	this.type = T.PUBLISHER_INFO;
+    	this.body = new AddrBody(hostname, port).json();
     }
 
     /**
@@ -46,9 +42,22 @@ public class MasterResponse {
      */
     public MasterResponse(Set<String> paths) {
 	this.type = T.PATH_SET;
-	this.paths = Optional.of(paths);
-	this.hostname = Optional.empty();
-	this.port = Optional.empty();
+	this.body = new PathSetBody(paths).json();
+    }
+    
+    public boolean validate() {
+    	switch (type) {
+    	case INVALID_REQUEST:
+    	case ACCEPT_UPDATE:
+    	case NO_PUBLISHER_FOR_PATH:
+    		return body.equals("");
+    	case PUBLISHER_INFO:
+    		return Serializable.parse(body, AddrBody.class).isPresent();
+    	case PATH_SET:
+    		return Serializable.parse(body, PathSetBody.class).isPresent();
+    	default:
+    		return false;
+    	}
     }
 
     @Override
@@ -56,9 +65,6 @@ public class MasterResponse {
 	if (obj == null) return false;
 	if (!MasterResponse.class.isAssignableFrom(obj.getClass())) return false;
 	MasterResponse other = (MasterResponse) obj;
-	return other.type == this.type
-	    && other.hostname.equals(this.hostname)
-	    && other.port.equals(this.port)
-	    && other.paths.equals(this.paths);
+	return other.type.equals(this.type) && other.body.equals(this.body);
     }
 }

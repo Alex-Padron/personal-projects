@@ -1,14 +1,15 @@
 package Messages;
 
 import DataStructures.Path;
+import Messages.Bodies.PathBody;
 
-public class PublisherRequest {
+public class PublisherRequest extends Serializable {
     public enum T {
 	GET_PATH_VALUE,
 	QUERY_PUBLISHING_PATH,
     }
     public final T type;
-    public final Path path;
+    public final String body;
 
     /**
      * @param type: of the request
@@ -16,6 +17,16 @@ public class PublisherRequest {
      */
     public PublisherRequest(T type, Path path) {
 	this.type = type;
-	this.path = path;
+	this.body = new PathBody(path).json();
+    }
+    
+    public boolean validate() {
+	switch (this.type) {
+	case GET_PATH_VALUE:
+	case QUERY_PUBLISHING_PATH:	
+	    return Serializable.parse(body, PathBody.class).isPresent();
+	default:
+		return false;
+	}
     }
 }

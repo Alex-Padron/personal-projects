@@ -1,35 +1,30 @@
 package Public;
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.lang.reflect.Type;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import com.google.gson.reflect.TypeToken;
-
 import DataStructures.Path;
 import Messages.PublisherRequest;
 import Messages.PublisherResponse;
+import Messages.Serializable;
+import Messages.Bodies.PathBody;
 import Server.MultiClientServer;
 
 /**
  * Publisher of type T
  */
-public class Publisher<T> extends MultiClientServer {
+public class Publisher<T> extends MultiClientServer<PublisherRequest, PublisherResponse<T>> {
     private final Lock lock;
     private final MasterClient m_client;
     private final Map<Path, T> path_data;
     private final Set<Path> to_remove;
     private final int port;
     private final String hostname;
-    private final Type response_type;
 
     /**
      * @param port: for the publisher to bind on
@@ -48,7 +43,6 @@ public class Publisher<T> extends MultiClientServer {
 	this.m_client = new MasterClient(master_hostname, master_port);
 	this.path_data = path_data;
 	this.to_remove = new HashSet<>();
-	this.response_type = new TypeToken<PublisherResponse<T>>(){}.getType();
     }
 
     /**
@@ -89,58 +83,47 @@ public class Publisher<T> extends MultiClientServer {
 	this.lock.unlock();
     }
 
-    protected void handle_client_connection(Socket socket) throws IOException {
-	BufferedReader from_client =
-	    new BufferedReader(new InputStreamReader(socket.getInputStream()));
-	DataOutputStream to_client =
-	    new DataOutputStream(socket.getOutputStream());
-	while (true) {
-	    String client_data_raw = from_client.readLine();
-	    if (client_data_raw == null) return;
-	    PublisherRequest client_message =
-		request_from_string(client_data_raw);
-	    if (client_message == null || !(validate(client_message))) {
-		write(to_client, invalid_request());
-		continue;
-	    }
-	    this.lock.lock();
-	    if (!path_data.containsKey(client_message.path))
-		write(to_client, not_publishing_response());
-	    else {
-		switch (client_message.type) {
-		case QUERY_PUBLISHING_PATH:
-		    write(to_client, publishing_response());
-		    break;
-		case GET_PATH_VALUE:
-		    write(to_client, data_response(path_data.get(client_message.path)));
-		    break;
-		default:
-		    break;
-		}
+    @Override
+    protected Optional<PublisherRequest> parse_client_string(String s) {
+	Optional<PublisherRequest> req =
+	    Serializable.parse(s, PublisherRequest.class);
+	if ((!req.isPresent()) || (!req.get().validate()))
+	    return Optional.empty();
+	return req;
+    }
+
+    protected PublisherResponse<T> handle_request(PublisherRequest req) {
+    this.lock.lock();
+	switch (req.type) {
+	case QUERY_PUBLISHING_PATH: {
+	    PathBody body = Serializable.parse_exn(req.body, PathBody.class);
+	    if (path_data.containsKey(body.path)) {
+		this.lock.unlock();
+		return publishing_response();
 	    }
 	    this.lock.unlock();
+	    return not_publishing_response();
+	}
+	case GET_PATH_VALUE: {
+	    PathBody body = Serializable.parse_exn(req.body, PathBody.class);
+	    if (path_data.containsKey(body.path)) {
+		this.lock.unlock();
+		return data_response(path_data.get(body.path));
+	    }
+	    this.lock.unlock();
+	    return not_publishing_response();
+	}
+	default:
+	    this.lock.unlock();
+	    return not_publishing_response();
 	}
     }
 
-    private synchronized PublisherRequest request_from_string(String s) {
-	try {
-	    return parser.fromJson(s, PublisherRequest.class);
-	} catch (Exception e) {
-	    return null;
-	}
-    }
-
-    private boolean validate(PublisherRequest req) {
-	return req.path.length() > 0;
-    }
-
-    private void write(DataOutputStream to_client, PublisherResponse<T> r) throws IOException {
-	to_client.writeBytes(parser.toJson(r, response_type) + "\n");
-    }
-
-    private PublisherResponse<T> invalid_request() {
+    @Override
+    protected PublisherResponse<T> invalid_request() {
 	return new PublisherResponse<T>(PublisherResponse.T.INVALID_REQUEST);
     }
+
     private PublisherResponse<T> not_publishing_response() {
 	return new PublisherResponse<T>(PublisherResponse.T.NOT_PUBLISHING_PATH);
     }

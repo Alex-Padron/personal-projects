@@ -15,28 +15,28 @@ public class TestSubscriber {
 	int port = 8200;
 	String master_hostname = "localhost";
 	int master_port = 8201;
-	Map<Path, Integer> paths = new HashMap<>();
-	paths.put(new Path("path1"), 1);
-	paths.put(new Path("path2"), 2);
+	Map<Path, String> paths = new HashMap<>();
+	paths.put(new Path("path1"), "a");
+	paths.put(new Path("path2"), "b");
 
 	Master ms = new Master(master_port);
 	Thread t1 = new Thread(ms);
 	t1.start();
 
-	Publisher<Integer> p =
+	Publisher<String> p =
 	    new Publisher<>(port, master_hostname, master_port, paths);
 	Thread t2 = new Thread(p);
 	t2.start();
 	p.send_paths_to_master();
 
 	System.out.println("Testing Subscriber...");
-	Subscriber<Integer> s =
+	Subscriber<String> s =
 	    new Subscriber<>(master_hostname, master_port);
 
 	assert(s.subscribe(new Path("path1")));
 	assert(!s.subscribe(new Path("path3")));
-	assert(s.get_value(new Path("path2")).get() == 2);
-	assert(s.get_value(new Path("path1")).get() == 1);
+	assert(s.get_value(new Path("path2")).get().equals("b"));
+	assert(s.get_value(new Path("path1")).get().equals("a"));
 	assert(!s.get_value(new Path("path3")).isPresent());
 
 	System.out.println("...passed");

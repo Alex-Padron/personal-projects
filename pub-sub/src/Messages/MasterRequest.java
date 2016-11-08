@@ -1,10 +1,10 @@
 package Messages;
 
-import java.util.Optional;
-
 import DataStructures.Path;
+import Messages.Bodies.PathBody;
+import Messages.Bodies.NewPathBody;
 
-public class MasterRequest {
+public class MasterRequest extends Serializable {
     public enum T {
 	REGISTER_PUBLISHER,
 	REMOVE_PUBLISHER,
@@ -12,9 +12,7 @@ public class MasterRequest {
 	GET_PATHS_UNDER,
     }
     public final T type;
-    public final Path path;
-    public final Optional<String> hostname;
-    public final Optional<Integer> port;
+    public final String body;
 
     /**
      * @param type: type of message to send. Use this constructor for
@@ -22,10 +20,8 @@ public class MasterRequest {
      * @param path: path corresponsing to this message.
      */
     public MasterRequest(T type, Path path) {
-	this.type = type;
-	this.path = path;
-	this.hostname = Optional.empty();
-	this.port = Optional.empty();
+    	this.type = type;
+    	this.body = new PathBody(path).json();
     }
 
     /**
@@ -35,9 +31,20 @@ public class MasterRequest {
      * @param port: of publisher
      */
     public MasterRequest(Path path, String hostname, int port) {
-	this.type = T.REGISTER_PUBLISHER;
-	this.path = path;
-	this.hostname = Optional.of(hostname);
-	this.port = Optional.of(port);
+    	this.type = T.REGISTER_PUBLISHER;
+    	this.body = new NewPathBody(path, hostname, port).json();
+    }
+
+    public boolean validate() {
+	switch (this.type) {
+	case REGISTER_PUBLISHER:
+	    return Serializable.parse(body, NewPathBody.class).isPresent();
+	case REMOVE_PUBLISHER:
+	case GET_PUBLISHER_OF_PATH:
+	case GET_PATHS_UNDER:
+	    return Serializable.parse(body, PathBody.class).isPresent();
+	default:
+		return false;
+	}
     }
 }

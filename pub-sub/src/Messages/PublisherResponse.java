@@ -1,12 +1,16 @@
 package Messages;
 
-import java.util.Optional;
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
+
+import Messages.Bodies.ValueBody;
 
 /**
    Response from publisher to subscriber. [V] is the datatype being sent,
    must be serializable by Gson.
  */
-public class PublisherResponse<V> {
+public class PublisherResponse<V> extends Serializable {
+	private static final Type t = new TypeToken<ValueBody<T>>(){}.getType();
     public enum T {
 	VALUE_RESPONSE,
 	NOT_PUBLISHING_PATH,
@@ -14,15 +18,15 @@ public class PublisherResponse<V> {
 	INVALID_REQUEST
     }
     public final T type;
-    public final Optional<V> value;
+    public final String body;
 
     /**
      * Publisher response without a value
      * @param type: of the message
      */
     public PublisherResponse(T type) {
-	this.value = Optional.empty();
-	this.type = type;
+    	this.type = type;
+    	this.body = "";
     }
 
     /**
@@ -31,7 +35,7 @@ public class PublisherResponse<V> {
      */
     public PublisherResponse(V value) {
 	this.type = T.VALUE_RESPONSE;
-	this.value = Optional.of(value);
+	this.body = new ValueBody<V>(value).json();
     }
 
     @Override
@@ -39,6 +43,19 @@ public class PublisherResponse<V> {
 	if (obj == null) return false;
 	if (!(obj instanceof PublisherResponse<?>)) return false;
 	PublisherResponse<?> other = (PublisherResponse<?>) obj;
-	return other.type.equals(this.type) && other.value.equals(this.value);
+	return other.type.equals(this.type) && other.body.equals(this.body);
+    }
+    
+    public boolean validate() {
+	switch (this.type) {
+	case NOT_PUBLISHING_PATH:
+	case AM_PUBLISHING_PATH:
+	case INVALID_REQUEST:
+	    return body.equals("");
+	case VALUE_RESPONSE:
+		return Serializable.parse(body, t).isPresent(); 
+	default:
+		return false;
+	}
     }
 }

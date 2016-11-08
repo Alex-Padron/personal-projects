@@ -1,110 +1,74 @@
 package Public;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
-import java.net.Socket;
+import java.util.Optional;
 import java.util.Set;
 
-import DataStructures.Path;
 import DataStructures.publisherData.PublisherPaths;
 import Messages.MasterRequest;
 import Messages.MasterResponse;
+import Messages.Serializable;
+import Messages.Bodies.PathBody;
+import Messages.Bodies.NewPathBody;
 import Server.MultiClientServer;
 
-public class Master extends MultiClientServer {
-	private PublisherPaths data;
-	
-	
-	public Master(int port) throws IOException {
-		this.server_socket = new ServerSocket();
-		this.server_socket.setReuseAddress(true);
-		this.server_socket.bind(new InetSocketAddress(port));
-		this.data = new PublisherPaths();
-	}
+public class Master extends MultiClientServer<MasterRequest, MasterResponse> {
+    private PublisherPaths data;
+
+    public Master(int port) throws IOException {
+	this.server_socket = new ServerSocket();
+	this.server_socket.setReuseAddress(true);
+	this.server_socket.bind(new InetSocketAddress(port));
+	this.data = new PublisherPaths();
+	this.server_name = "MASTER";
+    }
 
     @Override
-    protected void handle_client_connection(Socket socket) throws IOException{
-	BufferedReader from_client =
-	    new BufferedReader(new InputStreamReader(socket.getInputStream()));
-	DataOutputStream to_client =
-	    new DataOutputStream(socket.getOutputStream());
-	while (true) {
-	    String client_data_raw = from_client.readLine();
-	    if (client_data_raw == null) return; // client ended connection
-	    MasterRequest client_message = request_from_string(client_data_raw);
-	    if (client_message == null || (!validate(client_message))) {
-		write(to_client, invalid_request());
-		continue;
-	    }
-	    switch (client_message.type) {
-	    case REGISTER_PUBLISHER:
-		this.data.add(client_message.path, addr_from_msg(client_message));
-		write(to_client, register_response());
-		break;
-	    case REMOVE_PUBLISHER:
-		this.data.remove(client_message.path);
-		write(to_client, remove_response());
-		break;
-	    case GET_PATHS_UNDER:
-		write(to_client, paths_response(this.data.get_paths_under(client_message.path)));
-		break;
-	    case GET_PUBLISHER_OF_PATH:
-		Path path = client_message.path;
-		if (this.data.contains(path)) {
-		    write(to_client,filled_query_response(this.data.get(path)));
-		} else
-		    write(to_client, empty_query_response());
-		break;
-	    }
-	}
+    protected Optional<MasterRequest> parse_client_string(String s) {
+	Optional<MasterRequest> req = Serializable.parse(s, MasterRequest.class);
+	if ((!req.isPresent()) || (!req.get().validate()))
+	    return Optional.empty();
+	return req;
     }
 
-    private synchronized MasterRequest request_from_string(String s) {
-	try {
-	    return parser.fromJson(s, MasterRequest.class);
-	} catch (Exception e) {
-	    return null;
+    @Override
+    protected MasterResponse handle_request(MasterRequest req) {
+        switch (req.type) {
+	case REGISTER_PUBLISHER: {
+	    NewPathBody body = Serializable.parse_exn(req.body, NewPathBody.class);
+	    this.data.add(body.path, new InetSocketAddress(body.hostname, body.port));
+	    return accept_update_response();
 	}
-    }
-
-    private boolean validate(MasterRequest msg) {
-	switch (msg.type) {
-	case REGISTER_PUBLISHER:
-	    return msg.path.length() > 0
-		&& msg.hostname.isPresent()
-		&& msg.port.isPresent();
-	case GET_PATHS_UNDER:
-	case REMOVE_PUBLISHER:
-	case GET_PUBLISHER_OF_PATH:
-	    return msg.path.length() > 0
-		&& (!msg.hostname.isPresent())
-		&& (!msg.port.isPresent());
+	case REMOVE_PUBLISHER: {
+	    PathBody body = Serializable.parse_exn(req.body, PathBody.class);
+	    this.data.remove(body.path);
+	    return accept_update_response();
+	}
+	case GET_PATHS_UNDER: {
+	    PathBody body = Serializable.parse_exn(req.body, PathBody.class);
+	    return paths_response(this.data.get_paths_under(body.path));
+	}
+	case GET_PUBLISHER_OF_PATH: {
+	    PathBody body = Serializable.parse_exn(req.body, PathBody.class);
+	    if (this.data.contains(body.path)) {
+		return filled_query_response(this.data.get(body.path));
+	    } else {
+		return empty_query_response();
+	    }
+	}
 	default:
-	    return false;
+	    return invalid_request();
 	}
     }
 
-    private void write(DataOutputStream to_client, MasterResponse r) throws IOException {
-	to_client.writeBytes(parser.toJson(r, MasterResponse.class) + "\n");
+    @Override
+    protected MasterResponse invalid_request() {
+	return new MasterResponse(MasterResponse.T.INVALID_REQUEST);
     }
 
-    private InetSocketAddress addr_from_msg(MasterRequest msg) {
-	return new InetSocketAddress(msg.hostname.get(), msg.port.get());
-    }
-
-    private MasterResponse paths_response(Set<String> paths) {
-    return new MasterResponse(paths);
-    }
-    
-    private MasterResponse register_response() {
-	return new MasterResponse(MasterResponse.T.ACCEPT_UPDATE);
-    }
-
-    private MasterResponse remove_response() {
+    private MasterResponse accept_update_response() {
 	return new MasterResponse(MasterResponse.T.ACCEPT_UPDATE);
     }
 
@@ -116,8 +80,7 @@ public class Master extends MultiClientServer {
 	return new MasterResponse(MasterResponse.T.NO_PUBLISHER_FOR_PATH);
     }
 
-    private MasterResponse invalid_request() {
-	return new MasterResponse(MasterResponse.T.INVALID_REQUEST);
+    private MasterResponse paths_response(Set<String> paths) {
+	return new MasterResponse(paths);
     }
-
 }

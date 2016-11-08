@@ -11,12 +11,13 @@ import java.util.Hashtable;
 import java.util.Optional;
 import java.net.InetSocketAddress;
 
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import DataStructures.Path;
 import Messages.PublisherRequest;
 import Messages.PublisherResponse;
+import Messages.Serializable;
+import Messages.Bodies.ValueBody;
 
 /**
  * Subscriber for data type T. Should only be used to connect to publishers
@@ -26,8 +27,8 @@ public class Subscriber<T> {
     private final MasterClient MC;
     private final Hashtable<Path, InetSocketAddress> publishers;
     private final Hashtable<InetSocketAddress, Socket> sockets;
-    private final Gson parser;
-    private final Type msg_type;
+    private final Type publisher_response_type;
+    private final Type value_response_type;
 
     /*
       @param master_hostname, master_port: location of the master
@@ -36,8 +37,8 @@ public class Subscriber<T> {
 	this.MC = new MasterClient(master_hostname, master_port);
 	this.publishers = new Hashtable<>();
 	this.sockets = new Hashtable<>();
-	this.parser = new Gson();
-	this.msg_type = new TypeToken<PublisherResponse<Integer>>(){}.getType();
+	this.publisher_response_type = new TypeToken<PublisherResponse<T>>(){}.getType();
+	this.value_response_type = new TypeToken<ValueBody<T>>(){}.getType();
     }
 
     /*
@@ -92,16 +93,22 @@ public class Subscriber<T> {
 	    socket = new Socket(addr.getHostName(), addr.getPort());
 	    sockets.put(addr, socket);
 	}
-	DataOutputStream to_server = new DataOutputStream(
-							  socket.getOutputStream());
+	DataOutputStream to_server =
+	    new DataOutputStream(socket.getOutputStream());
 	BufferedReader from_server = new BufferedReader(
 				     new InputStreamReader(
 				     socket.getInputStream()));
 	PublisherRequest msg =
 	    new PublisherRequest(PublisherRequest.T.GET_PATH_VALUE, path);
-	to_server.writeBytes(parser.toJson(msg, PublisherRequest.class) + "\n");
-	PublisherResponse<T> response =
-	    parser.fromJson(from_server.readLine(), msg_type);
-        return response.value;
+	to_server.writeBytes(msg.json() + "\n");
+	String raw_response = from_server.readLine();
+	Optional<PublisherResponse<T>> response =
+	    Serializable.parse(raw_response, publisher_response_type);
+	if ((response.isPresent()) && (response.get().validate()) &&
+	    (response.get().type.equals(PublisherResponse.T.VALUE_RESPONSE))) {
+		ValueBody<T> body = Serializable.parse_exn(response.get().body, value_response_type);
+	    return Optional.of(body.value);
+	}
+	return Optional.empty();
     }
 }

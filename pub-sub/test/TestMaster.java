@@ -13,6 +13,8 @@ import com.google.gson.Gson;
 import DataStructures.Path;
 import Messages.MasterRequest;
 import Messages.MasterResponse;
+import Messages.Serializable;
+import Messages.Bodies.PathSetBody;
 import Public.Master;
 
 public class TestMaster {
@@ -64,7 +66,9 @@ public class TestMaster {
     	to_server.writeBytes(parser.toJson(req, MasterRequest.class) + "\n");
     	String s = from_server.readLine();
     	MasterResponse res = parser.fromJson(s, MasterResponse.class);
-    	return res.paths;
+    	if (!res.validate()) return Optional.empty();
+    	PathSetBody b = Serializable.parse_exn(res.body, PathSetBody.class);
+    	return Optional.of(b.paths);
     }
 
     public void master_bad_string(String s) throws IOException {
