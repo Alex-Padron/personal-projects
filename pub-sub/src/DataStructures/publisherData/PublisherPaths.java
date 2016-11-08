@@ -19,7 +19,7 @@ import DataStructures.trie.Trie;
  * This data structure is thread safe using a global lock
  */
 public class PublisherPaths {
-    private Trie<Integer> trie;
+    private Trie<PathNode> trie;
     private TwoWayMap<Integer, PublisherNode> addrs;
     private int publisher_num;
     private Lock lock;
@@ -31,45 +31,69 @@ public class PublisherPaths {
 	this.lock = new ReentrantLock();
     }
 
-    public void add(Path path, InetSocketAddress publisher_addr) {
-	this.lock.lock();
-	PublisherNode publisher_node = new PublisherNode(publisher_addr);
-	if (!addrs.contains_v(publisher_node)) {
-	    addrs.insert(publisher_num, publisher_node);
+    public boolean add(Path path, InetSocketAddress publisher_addr) {
+    	return add(path, publisher_addr, "");
+    }
+    public boolean add(Path path, InetSocketAddress publisher_addr, String lock_code) {
+	lock.lock();
+	Optional<PathNode> maybe_currently_inserted = trie.get(path);
+	if (maybe_currently_inserted.isPresent()) {
+	    PathNode currently_inserted = maybe_currently_inserted.get();
+	    // check whether the path is locked and verify the lock code
+	    if (currently_inserted.lock_code.length() > 0 &&
+		(!currently_inserted.lock_code.equals(lock_code))) {
+		lock.unlock();
+		return false;
+	    }
+	    // decrement the ref count of the publisher being removed
+	    addrs.get_v(currently_inserted.publisher_id).refcount--;
+	}
+	PublisherNode publisher = new PublisherNode(publisher_addr);
+	if (!addrs.contains_v(publisher)) {
+	    addrs.insert(publisher_num, publisher);
 	    publisher_num++;
 	}
-	// check if there is a path that will be overwritten and decrement the
-	// refcount
-	Optional<Integer> id_to_remove = trie.get(path);
-	if (id_to_remove.isPresent()) {
-	    addrs.get_v(id_to_remove.get()).refcount++;
-	}
-	int publisher_id = addrs.get_k(publisher_node);
+	int publisher_id = addrs.get_k(publisher);
 	addrs.get_v(publisher_id).refcount++;
-	trie.insert(path, publisher_id);
-	this.lock.unlock();
+	PathNode to_insert = new PathNode(publisher_id, lock_code);
+	trie.insert(path, to_insert);
+	lock.unlock();
+	return true;
     }
 
-    // throws exception if path not in trie
-    public void remove(Path path) {
-	this.lock.lock();
-	Optional<Integer> publisher_id = trie.get(path);
-	boolean removed = trie.remove(path);
-	if (removed && publisher_id.isPresent()) {
-	    PublisherNode r = addrs.get_v(publisher_id.get());
-	    r.refcount -= 1;
-	    if (r.refcount == 0) {
-		addrs.remove_k(publisher_id.get());
+    public boolean remove(Path path) {
+    	return remove(path, "");
+    }
+
+    public boolean remove(Path path, String lock_code) {
+	lock.lock();
+	Optional<PathNode> maybe_to_remove = trie.get(path);
+	if (maybe_to_remove.isPresent()) {
+	    PathNode to_remove = maybe_to_remove.get();
+	    // check if the publisher has permission to delete from this path
+	    if (to_remove.lock_code.length() > 0 && (!to_remove.lock_code.equals(lock_code))) {
+		lock.unlock();
+		return false;
 	    }
+	    boolean did_remove = trie.remove(path);
+	    if (did_remove) {
+		PublisherNode removed_from = addrs.get_v(to_remove.publisher_id);
+		removed_from.refcount -= 1;
+		if (removed_from.refcount == 0) {
+		    addrs.remove_k(to_remove.publisher_id);
+		}
+	    }
+	    lock.unlock();
+	    return true;
 	}
-	this.lock.unlock();
+	lock.unlock();
+	return true;
     }
 
-    // throws exception if path is not in trie
     public InetSocketAddress get(Path path) {
 	this.lock.lock();
-	int publisher_id = trie.get(path).get();
-	InetSocketAddress r = addrs.get_v(publisher_id).addr;
+	PathNode from_trie = trie.get(path).get();
+	InetSocketAddress r = addrs.get_v(from_trie.publisher_id).addr;
 	this.lock.unlock();
 	return r;
     }

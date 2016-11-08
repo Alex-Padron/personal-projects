@@ -104,25 +104,25 @@ public class TestPublisher {
 	    new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
 	pub_get_value("path1", 1);
-
+	
 	p.put_path(new Path("path3"), 3);
 
 	pub_get_value("path3", 3);
 	pub_get_value_i("path4");
 	pub_get_value("path2", 2);
-
+	
 	p.remove_path(new Path("path2"));
 
 	pub_get_value_i("path2");
 	pub_is_publishing("path1");
 	pub_not_publishing("path2");
-
+	
 	MasterClient mc = new MasterClient("localhost", master_port);
 	p.send_paths_to_master();
 	assert(mc.get_path_addr(new Path("path1")).get().getPort() == port);
 	assert(!mc.get_path_addr(new Path("path2")).isPresent());
 	assert(mc.get_path_addr(new Path("path3")).get().getPort() == port);
-
+	
 	p.put_path(new Path("path2"), 1);
 	p.send_paths_to_master();
 

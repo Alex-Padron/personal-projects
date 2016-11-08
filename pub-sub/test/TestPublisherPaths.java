@@ -11,9 +11,13 @@ import DataStructures.publisherData.PublisherPaths;
 public class TestPublisherPaths {
     PublisherPaths p;
 
-    void insert(String path_name, int port) throws Exception {
+    boolean insert(String path_name, int port) throws Exception {
+    	return insert(path_name, port, "");
+    }
+    
+    boolean insert(String path_name, int port, String lock_code) throws Exception {
 	InetSocketAddress i = new InetSocketAddress("localhost", port);
-	p.add(new Path(path_name), i);
+	return p.add(new Path(path_name), i, lock_code);
     }
 
     void check(String path_name, int expected_port) throws Exception {
@@ -28,8 +32,12 @@ public class TestPublisherPaths {
 	return p.contains(new Path(path_name));
     }
 
-    void remove(String path_name) throws Exception {
-	p.remove(new Path(path_name));
+    boolean remove(String path_name) throws Exception {
+    	return remove(path_name, "");
+    }
+    
+    boolean remove(String path_name, String lock_code) throws Exception {
+	return p.remove(new Path(path_name), lock_code);
     }
 
     @Test
@@ -107,4 +115,46 @@ public class TestPublisherPaths {
 	}
 	System.out.println("...passed");
     }
+    
+    @Test 
+    public void test4() throws Exception {
+    	System.out.println("Test Locking Paths...");
+    	p = new PublisherPaths();
+    	assert(insert("a/b", 1, "locked"));
+    	assert(insert("a/b/c", 1, ""));
+    	assert(get("a/b") == 1);
+    	assert(!remove("a/b", ""));
+    	assert(!insert("a/b", 1, "asdadad"));
+    	assert(insert("a/b", 2, "locked"));
+    	assert(get("a/b") == 2);
+    	assert(remove("a/b", "locked"));
+    	assert(!contains("a/b"));
+    	System.out.println("...passed");
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

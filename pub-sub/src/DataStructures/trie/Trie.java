@@ -18,7 +18,7 @@ public class Trie<T> {
 	this.head = new TrieNode<T>();
     }
 
-    /*
+    /**
      * @param path: path name to insert under
      * @param value: to insert
      */
@@ -32,7 +32,7 @@ public class Trie<T> {
 	insert_data_node(current, components[components.length - 1], value);
     }
 
-    /*
+    /**
      * @param path: to query
      * @return value if there is one for [path], otherwise empty
      */
@@ -42,7 +42,7 @@ public class Trie<T> {
 	return Optional.of(target.value);
     }
 
-    /*
+    /**
      * Removes a value from the trie and clears all uneeded nodes
      * after removing.
      * @param path: to remove value from
