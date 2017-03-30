@@ -1,10 +1,11 @@
 import datetime
 from http.server import BaseHTTPRequestHandler
 from http.server import HTTPServer
-from urllib.parse import urlparse, parse_qs
+from urlparse import urlparse
+#from urllib.parse import urlparse, parse_qs
 import smtplib
 
-fromaddr = "padron.robin@newfairfieldschools.org"
+fromaddr = "alexander.f.padron@gmail.com"
 password = "1denmw99"
 server_ssl = smtplib.SMTP_SSL("smtp.gmail.com", 465)
 server_ssl.ehlo() 
@@ -26,7 +27,7 @@ class EmailHTTPServer_RequestHandler(BaseHTTPRequestHandler):
         self.send_header('Access-Control-Allow-Origin', '*')
         self.end_headers()        
         split = str(self.data_string).split(":")
-        to_addrs = [split[0][2:]]
+        to_addrs = [split[0]]
         error = rreplace("\r\n".join(split[1:]), "'", "", 1)
         print("sending email to ", to_addrs[0])
         msg = "\r\n".join([
