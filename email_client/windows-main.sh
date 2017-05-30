@@ -9,9 +9,4 @@ sed 's/<IPADDR>/'$IP'/g' index.js > index-tmp.js
 sed 's/index.js/index-tmp.js/g' index.html > index-tmp.html
 cygstart chrome
 cygstart chrome index-tmp.html
-python3 server.py
-
-
-
-
-
+./dist/server/server.exe
