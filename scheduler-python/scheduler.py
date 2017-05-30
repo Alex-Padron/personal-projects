@@ -6,7 +6,6 @@ from tqueue import TQueue
 
 class Scheduler:
     def __init__(self):
-        self.n_queue = {} # map from port to the callback waiting on that port
         self.t_queue = TQueue() # waiting for a given time
         self.i_queue = [] # run as soon as possible
         self.alive = False
@@ -31,9 +30,10 @@ class Scheduler:
     def kill(self):
         self.alive = False
 
+S = Scheduler()
+
 if __name__ == "__main__":
     print ("testing scheduler...")
-    S = Scheduler()
     start_time = time.time()
     a = []
     def print_hello():

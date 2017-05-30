@@ -21,7 +21,7 @@ def generate_primes(length):
     s.sort()
     return l, s
 
-l, s = generate_primes(100000)
+l, s = generate_primes(1000000)
 
 def replace_digits(x, locations, r):
     x = list(str(x))
@@ -61,6 +61,6 @@ for p in s:
             if l[x] and (not p in solutions) and len(str(x)) == len(str(p)):
                 c += 1
                 primes.add(replace_digits(p, location, i))
-        if c >= 7:
+        if c >= 8:
             print "found solution", p, "with location", location, "and primes", primes
             solutions.add(p)

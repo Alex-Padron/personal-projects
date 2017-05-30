@@ -7,6 +7,7 @@ the publisher. Each path only has a single value at a time, they can be thought
 of as a stream.
 
 ###
+
 keep working on consistency tests
 -for master, add remove/get_paths_under, and other messages to consistency
 add authentication for publishers (master signs that the given publisher is
